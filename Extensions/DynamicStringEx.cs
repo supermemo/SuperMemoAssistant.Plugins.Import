@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 17:45
-// Modified On:  2019/04/10 21:10
+// Created On:   2019/04/13 20:51
+// Modified On:  2019/04/13 20:55
 // Modified By:  Alexis
 
 #endregion
@@ -30,35 +30,18 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using SuperMemoAssistant.Interop.Plugins;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 
-namespace SuperMemoAssistant.Plugins.Import
+namespace SuperMemoAssistant.Plugins.Import.Extensions
 {
-  internal class ImportApp : PluginApp
+  public static class DynamicStringEx
   {
     #region Constants & Statics
 
-    public static readonly List<string> ResourceDictionaries = new List<string>
-    {
-      "pack://application:,,,/SuperMemoAssistant.Plugins.Import;component/UI/FeedsDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.UI;component/Services/UI/Forms/Types/CrudListDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.HTML;component/UI/HtmlFiltersDataTemplate.xaml",
-    };
-
-    #endregion
-
-
-
-
-    #region Constructors
-
-    public ImportApp()
-    {
-      Startup += App_Startup;
-    }
+    // ReSharper disable once InconsistentNaming
+    private static readonly Regex RE_Interpolate = new Regex("{(?<exp>[^}]+)}", RegexOptions.Compiled);
 
     #endregion
 
@@ -67,14 +50,20 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Methods
 
-    private void App_Startup(object sender, StartupEventArgs e)
+    public static string Interpolate(this string text, params (string name, object instance)[] parameters)
     {
-      foreach (var resDictSrc in ResourceDictionaries)
-        Resources.MergedDictionaries.Add(new ResourceDictionary
-        {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
-        });
+      return RE_Interpolate.Replace(text, match =>
+      {
+        var expParams = parameters.Select(p => Expression.Parameter(p.instance.GetType(), p.name));
+
+        var exp = System.Linq.Dynamic.DynamicExpression.ParseLambda(
+          expParams.ToArray(),
+          null,
+          match.Groups["exp"].Value);
+        var res = exp.Compile().DynamicInvoke(parameters.Select(p => p.instance).ToArray());
+
+        return res?.ToString() ?? string.Empty;
+      });
     }
 
     #endregion

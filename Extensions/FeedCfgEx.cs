@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 17:45
-// Modified On:  2019/04/10 21:10
+// Created On:   2019/04/13 21:07
+// Modified On:  2019/04/14 02:54
 // Modified By:  Alexis
 
 #endregion
@@ -31,50 +31,46 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Windows;
-using SuperMemoAssistant.Interop.Plugins;
+using CodeHollow.FeedReader;
+using SuperMemoAssistant.Plugins.Import.Configs;
 
-namespace SuperMemoAssistant.Plugins.Import
+namespace SuperMemoAssistant.Plugins.Import.Extensions
 {
-  internal class ImportApp : PluginApp
+  public static class FeedCfgEx
   {
-    #region Constants & Statics
-
-    public static readonly List<string> ResourceDictionaries = new List<string>
-    {
-      "pack://application:,,,/SuperMemoAssistant.Plugins.Import;component/UI/FeedsDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.UI;component/Services/UI/Forms/Types/CrudListDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.HTML;component/UI/HtmlFiltersDataTemplate.xaml",
-    };
-
-    #endregion
-
-
-
-
-    #region Constructors
-
-    public ImportApp()
-    {
-      Startup += App_Startup;
-    }
-
-    #endregion
-
-
-
-
     #region Methods
 
-    private void App_Startup(object sender, StartupEventArgs e)
+    public static string InterpolateUrl(this FeedCfg feedCfg)
     {
-      foreach (var resDictSrc in ResourceDictionaries)
-        Resources.MergedDictionaries.Add(new ResourceDictionary
+      return feedCfg.SourceUrl.Interpolate(
+        ("now", DateTime.Now),
+        ("lastPubDate", feedCfg.LastPubDate),
+        ("lastRefreshDate", feedCfg.LastRefreshDate)
+      );
+    }
+
+    public static bool ShouldExcludeCategory(this FeedCfg feedCfg, FeedItem feedItem)
+    {
+      foreach (var catFilter in feedCfg.CategoryFilters)
+        switch (catFilter.Mode)
         {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
-        });
+          case Models.FilterMode.Exclude:
+            if (feedItem.Categories?.Contains(catFilter.Category) ?? false)
+              return true;
+
+            break;
+
+          case Models.FilterMode.Include:
+            if (feedItem.Categories?.Contains(catFilter.Category) ?? false)
+              return false;
+
+            break;
+
+          default:
+            throw new NotImplementedException($"No such FilterMode {catFilter.Mode}");
+        }
+
+      return false;
     }
 
     #endregion

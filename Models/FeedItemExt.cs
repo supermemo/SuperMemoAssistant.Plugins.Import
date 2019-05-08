@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 17:45
-// Modified On:  2019/04/10 21:10
+// Created On:   2019/04/25 14:07
+// Modified On:  2019/04/25 17:42
 // Modified By:  Alexis
 
 #endregion
@@ -30,52 +30,48 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using SuperMemoAssistant.Interop.Plugins;
+using CodeHollow.FeedReader;
+using CodeHollow.FeedReader.Feeds;
+using SuperMemoAssistant.Plugins.Import.Configs;
 
-namespace SuperMemoAssistant.Plugins.Import
+namespace SuperMemoAssistant.Plugins.Import.Models
 {
-  internal class ImportApp : PluginApp
+  public class FeedItemExt : FeedItem
   {
-    #region Constants & Statics
-
-    public static readonly List<string> ResourceDictionaries = new List<string>
-    {
-      "pack://application:,,,/SuperMemoAssistant.Plugins.Import;component/UI/FeedsDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.UI;component/Services/UI/Forms/Types/CrudListDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.HTML;component/UI/HtmlFiltersDataTemplate.xaml",
-    };
-
-    #endregion
-
-
-
-
     #region Constructors
 
-    public ImportApp()
+    /// <inheritdoc />
+    public FeedItemExt() { }
+
+    /// <inheritdoc />
+    public FeedItemExt(FeedItem feedItem, WebsiteCfg webCfg)
     {
-      Startup += App_Startup;
+      WebCfg               = webCfg;
+      Author               = feedItem.Author;
+      Categories           = feedItem.Categories;
+      Content              = feedItem.Content;
+      Description          = feedItem.Description;
+      Id                   = feedItem.Id;
+      Link                 = feedItem.Link;
+      PublishingDate       = feedItem.PublishingDate;
+      PublishingDateString = feedItem.PublishingDateString;
+      SpecificItem         = feedItem.SpecificItem;
+      Title                = feedItem.Title;
     }
+
+    /// <inheritdoc />
+    public FeedItemExt(BaseFeedItem feedItem) : base(feedItem) { }
 
     #endregion
 
 
 
 
-    #region Methods
+    #region Properties & Fields - Public
 
-    private void App_Startup(object sender, StartupEventArgs e)
-    {
-      foreach (var resDictSrc in ResourceDictionaries)
-        Resources.MergedDictionaries.Add(new ResourceDictionary
-        {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
-        });
-    }
+    public WebsiteCfg WebCfg { get; }
+
+    public bool IsSelected { get; set; } = true;
 
     #endregion
   }

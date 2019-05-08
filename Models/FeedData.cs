@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 17:45
-// Modified On:  2019/04/10 21:10
+// Created On:   2019/04/10 23:47
+// Modified On:  2019/04/14 00:46
 // Modified By:  Alexis
 
 #endregion
@@ -30,34 +30,21 @@
 
 
 
-using System;
 using System.Collections.Generic;
-using System.Windows;
-using SuperMemoAssistant.Interop.Plugins;
+using CodeHollow.FeedReader;
+using SuperMemoAssistant.Plugins.Import.Configs;
 
-namespace SuperMemoAssistant.Plugins.Import
+namespace SuperMemoAssistant.Plugins.Import.Models
 {
-  internal class ImportApp : PluginApp
+  public class FeedData
   {
-    #region Constants & Statics
-
-    public static readonly List<string> ResourceDictionaries = new List<string>
-    {
-      "pack://application:,,,/SuperMemoAssistant.Plugins.Import;component/UI/FeedsDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.UI;component/Services/UI/Forms/Types/CrudListDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.HTML;component/UI/HtmlFiltersDataTemplate.xaml",
-    };
-
-    #endregion
-
-
-
-
     #region Constructors
 
-    public ImportApp()
+    /// <inheritdoc />
+    public FeedData(FeedCfg feedCfg, Feed feed)
     {
-      Startup += App_Startup;
+      FeedCfg = feedCfg;
+      Feed    = feed;
     }
 
     #endregion
@@ -65,17 +52,11 @@ namespace SuperMemoAssistant.Plugins.Import
 
 
 
-    #region Methods
+    #region Properties & Fields - Public
 
-    private void App_Startup(object sender, StartupEventArgs e)
-    {
-      foreach (var resDictSrc in ResourceDictionaries)
-        Resources.MergedDictionaries.Add(new ResourceDictionary
-        {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
-        });
-    }
+    public FeedCfg           FeedCfg  { get; }
+    public Feed              Feed     { get; }
+    public List<FeedItemExt> NewItems { get; set; } = new List<FeedItemExt>();
 
     #endregion
   }

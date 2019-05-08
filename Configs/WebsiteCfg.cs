@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2019/04/22 15:02
-// Modified On:  2019/04/22 20:58
+// Modified On:  2019/04/29 12:56
 // Modified By:  Alexis
 
 #endregion
@@ -33,6 +33,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using System.Windows;
 using Forge.Forms.Annotations;
 using Newtonsoft.Json;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
@@ -53,8 +54,21 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
     "Save",
     IsDefault = true,
     Validates = true)]
-  public class ImportCfg : IElementPickerCallback, INotifyPropertyChanged
+  public class WebsiteCfg : IElementPickerCallback, INotifyPropertyChanged
   {
+    #region Constructors
+
+    /// <inheritdoc />
+    public WebsiteCfg()
+    {
+      UrlPattern = new ObservableCollection<UrlPattern>();
+    }
+
+    #endregion
+
+
+
+
     #region Properties & Fields - Public
 
     [Field(Name = "Name")]
@@ -62,13 +76,32 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 
     [Field]
     [DirectContent]
-    public CrudList<UrlPattern> UrlPattern { get; set; } = new CrudList<UrlPattern>("Configured urls:");
+    [JsonIgnore]
+    public CrudList<UrlPattern> UrlPatternField { get; set; }
 
-    [Field(Name = "Title regex")]
+    [Field(Name = "Title regex (optional)")]
     public string TitleRegexPattern { get; set; }
 
-    [Field]
+    [Field(Name = "Date regex (optional)")]
+    public string DateRegexPattern { get; set; }
+
+    [Field(Name = "User agent (optional)")]
+    public string UserAgent { get; set; }
+    [Field(Name = "Cookie (optional)")]
     public string Cookie { get; set; }
+    [Field(Name = "Link parameter (optional)")]
+    public string LinkParameter { get; set; }
+
+    [Field(Name = "Execute javascript")]
+    public bool ExecuteJavascript { get; set; }
+
+    [Field(Name = "Load iframes")]
+    public bool LoadIframes { get; set; }
+
+    [Field(Name = "Render svg (base64)")]
+    public bool InlineSvg { get; set; }
+    [Field(Name = "Inline images (base64)")]
+    public bool InlineImages { get; set; }
 
     [Field(Name = "Priority (%)")]
     [Value(Must.BeGreaterThanOrEqualTo,
@@ -99,6 +132,8 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 
     public int RootDictElementId { get; set; }
 
+    public ObservableCollection<UrlPattern> UrlPattern { get; set; }
+
 
     //
     // Helpers
@@ -107,10 +142,13 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
     public ObservableCollection<HtmlFilter> Filters => FiltersRoot.Children;
 
     [JsonIgnore]
-    public IElement RootElement => Svc.SMA.Registry.Element[RootDictElementId <= 0 ? 1 : RootDictElementId];
+    public IElement RootElement => RootDictElementId <= 0 ? null : Svc.SMA.Registry.Element[RootDictElementId];
 
     [JsonIgnore]
     public Regex TitleRegex { get; private set; }
+
+    [JsonIgnore]
+    public Regex DateRegex { get; private set; }
 
     #endregion
 
@@ -138,14 +176,37 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 
     #region Methods
 
-    // ReSharper disable once UnusedParameter.Local
-    private void OnTitleRegexPatternChanged(object before, object after)
+    public void OnUrlPatternChanged()
+    {
+      UrlPatternField = new CrudList<UrlPattern>("Configured urls:", UrlPattern)
+      {
+        Height = new GridLength(120.0),
+        SortingDirection = ListSortDirection.Descending,
+        SortingPropertyName = "Priority"
+      };
+    }
+    
+    private void OnTitleRegexPatternChanged()
     {
       try
       {
-        TitleRegex = after == null
+        TitleRegex = TitleRegexPattern == null
           ? null
-          : new Regex((string)after, RegexOptions.Compiled);
+          : new Regex(TitleRegexPattern, RegexOptions.Compiled);
+      }
+      catch
+      {
+        // Ignored
+      }
+    }
+    
+    private void OnDateRegexPatternChanged()
+    {
+      try
+      {
+        DateRegex = DateRegexPattern == null
+          ? null
+          : new Regex(DateRegexPattern, RegexOptions.Compiled);
       }
       catch
       {

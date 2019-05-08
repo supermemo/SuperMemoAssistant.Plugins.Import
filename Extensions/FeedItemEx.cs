@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 17:45
-// Modified On:  2019/04/10 21:10
+// Created On:   2019/04/14 02:23
+// Modified On:  2019/04/14 03:03
 // Modified By:  Alexis
 
 #endregion
@@ -30,51 +30,18 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using SuperMemoAssistant.Interop.Plugins;
+using CodeHollow.FeedReader;
+using SuperMemoAssistant.Plugins.Import.Configs;
 
-namespace SuperMemoAssistant.Plugins.Import
+namespace SuperMemoAssistant.Plugins.Import.Extensions
 {
-  internal class ImportApp : PluginApp
+  public static class FeedItemEx
   {
-    #region Constants & Statics
-
-    public static readonly List<string> ResourceDictionaries = new List<string>
-    {
-      "pack://application:,,,/SuperMemoAssistant.Plugins.Import;component/UI/FeedsDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.UI;component/Services/UI/Forms/Types/CrudListDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.HTML;component/UI/HtmlFiltersDataTemplate.xaml",
-    };
-
-    #endregion
-
-
-
-
-    #region Constructors
-
-    public ImportApp()
-    {
-      Startup += App_Startup;
-    }
-
-    #endregion
-
-
-
-
     #region Methods
 
-    private void App_Startup(object sender, StartupEventArgs e)
+    public static string MakeLink(this FeedItem feedItem, WebsiteCfg webCfg)
     {
-      foreach (var resDictSrc in ResourceDictionaries)
-        Resources.MergedDictionaries.Add(new ResourceDictionary
-        {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
-        });
+      return feedItem.Link + (webCfg?.LinkParameter ?? string.Empty);
     }
 
     #endregion

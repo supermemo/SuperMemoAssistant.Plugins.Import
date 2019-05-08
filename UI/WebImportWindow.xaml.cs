@@ -32,8 +32,7 @@
 using System.Linq;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -44,10 +43,10 @@ using SuperMemoAssistant.Interop.SuperMemo.Content.Contents;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Builders;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Models;
 using SuperMemoAssistant.Plugins.Import.Configs;
+using SuperMemoAssistant.Plugins.Import.Extensions;
 using SuperMemoAssistant.Services;
-using SuperMemoAssistant.Services.HTML;
-using SuperMemoAssistant.Services.HTML.Extensions;
 using SuperMemoAssistant.Sys.Windows.Input;
+using Flurl.Http;
 
 namespace SuperMemoAssistant.Plugins.Import.UI
 {
@@ -64,20 +63,14 @@ namespace SuperMemoAssistant.Plugins.Import.UI
     #endregion
 
 
-    private ImportCfgs Config => Svc<ImportPlugin>.Plugin.Config;
-
-    private ImportCfg TryFindConfig(string url)
-    {
-      return Config.Configs.FirstOrDefault(c => c.UrlPattern.Any(p => p.Match(url)));
-    }
+    private WebsitesCfg Config => Svc<ImportPlugin>.Plugin.WebConfig;
 
 
 
     #region Properties & Fields - Public
 
     public ICommand ImportCommand => new AsyncRelayCommand(Import);
-
-    
+    public ICommand CancelCommand => new RelayCommand(Close);
 
     #endregion
 
@@ -94,12 +87,9 @@ namespace SuperMemoAssistant.Plugins.Import.UI
       foreach (var (content, cfg, url) in downloadResults)
         builders.Add(
           new ElementBuilder(ElementType.Topic, new TextContent(true, content))
-            .WithParent(cfg?.RootElement)
-            .WithPriority(cfg?.Priority ?? ImportConst.DefaultPriority)
+            .ConfigureWeb(cfg)
             .WithReference(
-              r => r.WithDate(DateTime.Now)
-                    .WithTitle(cfg?.TitleRegex.Match(content).Groups.SafeGet(1).Value)
-                    .WithSource(cfg?.Name)
+              r => r.ConfigureWeb(cfg, content, DateTime.Now.ToString(CultureInfo.InvariantCulture))
                     .WithLink(url))
             .DoNotDisplay()
         );
@@ -117,55 +107,36 @@ namespace SuperMemoAssistant.Plugins.Import.UI
       }
     }
 
-    private async Task<IEnumerable<(string content, ImportCfg cfg, string url)>> Download()
+    private async Task<IEnumerable<(string content, WebsiteCfg cfg, string url)>> Download()
     {
       var urls = tbUrls.Text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
       
-      var throttler = new SemaphoreSlim(10);
-      var downloadTasks = urls.Select(u => Download(u, throttler));
+      var dlTasks = urls.Select(Download);
+      var results = await Task.WhenAll(dlTasks);
 
-      return (await Task.WhenAll(downloadTasks)).Where(c => c.content != null);
+      return results.Where(c => c.content != null);
     }
 
-    private async Task<(string content, ImportCfg cfg, string url)> Download(string url, SemaphoreSlim throttler)
+    private async Task<(string content, WebsiteCfg cfg, string url)> Download(string url)
     {
-      var cfg = TryFindConfig(url);
+      var cfg = Config.FindConfig(url);
       var matchingRule = cfg == null
         ? string.Empty
         : $", with matching rule {cfg.Name}";
 
       try
       {
-        await throttler.WaitAsync();
+        var httpReq  = cfg?.CreateRequest(url) ?? url.CreateRequest();
+        var content = await httpReq.GetStringAsync();
 
-        var client = new HttpClient(new HttpClientHandler { UseCookies = false });
-
-        client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
-
-        if (cfg != null && string.IsNullOrWhiteSpace(cfg.Cookie) == false)
-          client.DefaultRequestHeaders.Add("Cookie", cfg.Cookie);
-        
-        var httpReq = new HttpRequestMessage(HttpMethod.Get, url);
-        var httpResp = await client.SendAsync(httpReq);
-
-        if (httpResp == null || !httpResp.IsSuccessStatusCode)
+        if (content == null)
         {
           LogTo.Warning(
-            $"Failed to download content for url '{url}'{matchingRule}. HTTP Status code : {httpResp?.StatusCode}");
+            $"Failed to download content for url '{url}'{matchingRule}.");
           return default;
         }
-
-        var content = await httpResp.Content.ReadAsStringAsync();
-
-        if (cfg != null && cfg.Filters.Any())
-          content = string.Join(
-            "\r\n",
-            cfg.Filters
-               .Select(f => f.Filter(content))
-               .Where(s => string.IsNullOrWhiteSpace(s) == false)
-               .ToList());
-
-        content = HtmlUtils.EnsureAbsoluteLinks(content, new Uri(url));
+        
+        content = await cfg.ProcessContent(content, url);
 
         return (content, cfg, url);
       }
@@ -174,6 +145,20 @@ namespace SuperMemoAssistant.Plugins.Import.UI
         LogTo.Error(ex, $"Exception caught while importing url '{url}'{matchingRule}.");
 
         return default;
+      }
+    }
+
+    private void Window_KeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.Key)
+      {
+        case Key.Enter:
+          //BtnOk.SimulateClick();
+          break;
+
+        case Key.Escape:
+          e.Handled = BtnCancel.SimulateClick();
+          break;
       }
     }
 

@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 17:45
-// Modified On:  2019/04/10 21:10
+// Created On:   2019/04/22 14:49
+// Modified On:  2019/04/29 12:56
 // Modified By:  Alexis
 
 #endregion
@@ -30,34 +30,48 @@
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using SuperMemoAssistant.Interop.Plugins;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using Forge.Forms.Annotations;
+using Newtonsoft.Json;
+using SuperMemoAssistant.Services.UI.Forms.Types;
 
-namespace SuperMemoAssistant.Plugins.Import
+namespace SuperMemoAssistant.Plugins.Import.Configs
 {
-  internal class ImportApp : PluginApp
+  [Form(Mode = DefaultFields.None)]
+  public class WebsitesCfg : INotifyPropertyChanged
   {
-    #region Constants & Statics
+    #region Constructors
 
-    public static readonly List<string> ResourceDictionaries = new List<string>
+    public WebsitesCfg()
     {
-      "pack://application:,,,/SuperMemoAssistant.Plugins.Import;component/UI/FeedsDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.UI;component/Services/UI/Forms/Types/CrudListDataTemplate.xaml",
-      "pack://application:,,,/SuperMemoAssistant.Services.HTML;component/UI/HtmlFiltersDataTemplate.xaml",
-    };
+      Websites = new ObservableCollection<WebsiteCfg>();
+    }
 
     #endregion
 
 
 
 
-    #region Constructors
+    #region Properties & Fields - Public
 
-    public ImportApp()
+    [Field]
+    [DirectContent]
+    [JsonIgnore]
+    public CrudList<WebsiteCfg> WebsitesField { get; set; }
+
+    public ObservableCollection<WebsiteCfg> Websites { get; set; }
+
+    #endregion
+
+
+
+
+    #region Methods Impl
+
+    public override string ToString()
     {
-      Startup += App_Startup;
+      return "Websites";
     }
 
     #endregion
@@ -67,15 +81,23 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Methods
 
-    private void App_Startup(object sender, StartupEventArgs e)
+    public void OnWebsitesChanged()
     {
-      foreach (var resDictSrc in ResourceDictionaries)
-        Resources.MergedDictionaries.Add(new ResourceDictionary
-        {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
-        });
+      WebsitesField = new CrudList<WebsiteCfg>("Configured websites:", Websites)
+      {
+        SortingDirection    = ListSortDirection.Ascending,
+        SortingPropertyName = "Name"
+      };
     }
+
+    #endregion
+
+
+
+
+    #region Events
+
+    public event PropertyChangedEventHandler PropertyChanged;
 
     #endregion
   }

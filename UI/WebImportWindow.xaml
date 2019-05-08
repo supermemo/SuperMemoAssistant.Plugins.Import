@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="clr-namespace:SuperMemoAssistant.Plugins.Import.UI"
         mc:Ignorable="d"
+        KeyDown="Window_KeyDown"
         Title="ImportWindow" Height="450" Width="800"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         d:DataContext="{d:DesignInstance ui:ImportWindow}">
@@ -15,7 +16,11 @@
       <RowDefinition Height="auto" />
     </Grid.RowDefinitions>
     
-    <TextBox Name="tbUrls" Grid.Row="0" />
+    <TextBox Name="tbUrls"
+             Grid.Row="0"
+             AcceptsReturn="True"
+             TextWrapping="NoWrap"
+             VerticalScrollBarVisibility="Visible" />
     
     <Grid Grid.Row="1">
     
@@ -25,8 +30,21 @@
         <ColumnDefinition Width="auto" />
       </Grid.ColumnDefinitions>
 
-      <Button Grid.Column="1"
+      <Button Name="BtnCancel"
+              Grid.Column="1"
+              Height="40"
+              VerticalAlignment="Center"
+              Padding="6 0 6 0"
+              Margin="6 0 6 0"
               Content="Cancel"
+              Command="{Binding CancelCommand}" />
+
+      <Button Name="BtnOk"
+              Grid.Column="2"
+              Height="40"
+              VerticalAlignment="Center"
+              Padding="6 0 6 0"
+              Content="Ok"
               Command="{Binding ImportCommand}" />
     </Grid>
   </Grid>

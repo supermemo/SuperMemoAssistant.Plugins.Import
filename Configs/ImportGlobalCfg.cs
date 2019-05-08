@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/22 14:49
-// Modified On:  2019/04/22 18:10
+// Created On:   2019/04/25 14:07
+// Modified On:  2019/04/25 19:09
 // Modified By:  Alexis
 
 #endregion
@@ -30,41 +30,15 @@
 
 
 
-using System.ComponentModel;
-using Forge.Forms.Annotations;
-using SuperMemoAssistant.Services.UI.Forms.Types;
+using System.Collections.Generic;
 
 namespace SuperMemoAssistant.Plugins.Import.Configs
 {
-  [Form(Mode = DefaultFields.None)]
-  public class ImportCfgs : INotifyPropertyChanged
+  public class ImportGlobalCfg
   {
     #region Properties & Fields - Public
 
-    [Field]
-    [DirectContent]
-    public CrudList<ImportCfg> Configs { get; set; } = new CrudList<ImportCfg>("Configured websites:");
-
-    #endregion
-
-
-
-
-    #region Methods Impl
-
-    public override string ToString()
-    {
-      return "General";
-    }
-
-    #endregion
-
-
-
-
-    #region Events
-
-    public event PropertyChangedEventHandler PropertyChanged;
+    public Dictionary<string, ImportCollectionCfg> CollectionConfigs { get; set; } = new Dictionary<string, ImportCollectionCfg>();
 
     #endregion
   }
