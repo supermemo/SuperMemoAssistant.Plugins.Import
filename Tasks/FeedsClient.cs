@@ -65,6 +65,8 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
     private WebsitesCfg WebsitesConfig => Svc<ImportPlugin>.Plugin.WebConfig;
     private FeedsCfg    FeedsConfig    => Svc<ImportPlugin>.Plugin.FeedsConfig;
 
+    private Dictionary<FeedCfg, FlurlClient> CachedClients = new Dictionary<FeedCfg, FlurlClient>();
+
     #endregion
 
 
@@ -187,7 +189,10 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
         if (feedItem.Link != null)
         {
-          var httpReq  = webCfg?.CreateRequest(feedItem.Link) ?? feedItem.Link.CreateRequest();
+          var httpReq = webCfg?.CreateRequest(
+              feedItem.Link,
+              string.IsNullOrWhiteSpace(webCfg.Cookie) ? null : new FlurlClient()/*.Configure(s => s.CookiesEnabled = false)*/)
+            ?? feedItem.Link.CreateRequest();
           var httpResp = await httpReq.GetStringAsync();
 
           if (httpResp != null)
@@ -260,7 +265,7 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
           );
         }
 
-        var res = Svc.SMA.Registry.Element.Add(
+        var res = Svc.SM.Registry.Element.Add(
           out var results,
           ElemCreationFlags.CreateSubfolders,
           builders.ToArray()

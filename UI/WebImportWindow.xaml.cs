@@ -94,7 +94,7 @@ namespace SuperMemoAssistant.Plugins.Import.UI
             .DoNotDisplay()
         );
 
-      var res = Svc.SMA.Registry.Element.Add(
+      var res = Svc.SM.Registry.Element.Add(
         out var addResults,
         ElemCreationFlags.CreateSubfolders,
         builders.ToArray()
@@ -126,7 +126,10 @@ namespace SuperMemoAssistant.Plugins.Import.UI
 
       try
       {
-        var httpReq  = cfg?.CreateRequest(url) ?? url.CreateRequest();
+        var httpReq = cfg?.CreateRequest(
+            url,
+            string.IsNullOrWhiteSpace(cfg.Cookie) ? null : new FlurlClient()/*.Configure(s => s.CookiesEnabled = false)*/)
+          ?? url.CreateRequest();
         var content = await httpReq.GetStringAsync();
 
         if (content == null)

@@ -97,7 +97,7 @@ namespace SuperMemoAssistant.Plugins.Import
     {
       GlobalConfig = Svc.Configuration.Load<ImportGlobalCfg>().Result ?? new ImportGlobalCfg();
 
-      var colKno = Svc.SMA.Collection.GetKnoFilePath();
+      var colKno = Svc.SM.Collection.GetKnoFilePath();
       var colCfg = GlobalConfig.CollectionConfigs.SafeGet(colKno);
 
       if (colCfg == null)
@@ -106,7 +106,7 @@ namespace SuperMemoAssistant.Plugins.Import
       FeedsConfig = colCfg.Feeds;
       WebConfig   = colCfg.Websites;
 
-      Svc.SMA.UI.ElementWindow.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
+      Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 
       Svc.HotKeyManager
          .RegisterGlobal(

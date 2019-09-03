@@ -142,7 +142,7 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
     public ObservableCollection<HtmlFilter> Filters => FiltersRoot.Children;
 
     [JsonIgnore]
-    public IElement RootElement => RootDictElementId <= 0 ? null : Svc.SMA.Registry.Element[RootDictElementId];
+    public IElement RootElement => RootDictElementId <= 0 ? null : Svc.SM.Registry.Element[RootDictElementId];
 
     [JsonIgnore]
     public Regex TitleRegex { get; private set; }

@@ -8,9 +8,13 @@ namespace SuperMemoAssistant.Plugins.Import.Extensions
 {
   public static class HttpEx
   {
-    public static IFlurlRequest CreateRequest(this string url)
+    public static IFlurlRequest CreateRequest(this string url, IFlurlClient client = null, string userAgent = null)
     {
-      return url.WithHeader(HttpConst.UserAgentField, HttpConst.UserAgentIE11);
+      userAgent = string.IsNullOrWhiteSpace(userAgent) ? HttpConst.UserAgentIE11 : userAgent;
+
+      return client == null
+        ? url.WithHeader(HttpConst.UserAgentField, userAgent)
+        : client.Request(url).WithHeader(HttpConst.UserAgentField, userAgent);
     }
 
     public static async Task<string> SafeGetStringAsync(this string url)

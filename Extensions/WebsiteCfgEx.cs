@@ -112,18 +112,12 @@ namespace SuperMemoAssistant.Plugins.Import.Extensions
       return cfg?.DateRegex?.Match(html).Groups.SafeGet(1);
     }
 
-    public static IFlurlRequest CreateRequest(this WebsiteCfg cfg, string url)
+    public static IFlurlRequest CreateRequest(this WebsiteCfg cfg, string url, IFlurlClient client = null)
     {
-      var req = url.CreateRequest();
+      var req = url.CreateRequest(client, cfg.UserAgent);
 
       try
       {
-        var userAgent = string.IsNullOrWhiteSpace(cfg.UserAgent) == false
-          ? cfg.UserAgent
-          : HttpConst.UserAgentIE11;
-
-        req.WithHeader(HttpConst.UserAgentField, userAgent);
-
         if (string.IsNullOrWhiteSpace(cfg.Cookie) == false)
           req.WithCookies(CookiesUtils.ParseCookies(cfg.Cookie, true));
       }
