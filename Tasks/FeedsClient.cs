@@ -64,9 +64,7 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
     private WebsitesCfg WebsitesConfig => Svc<ImportPlugin>.Plugin.WebConfig;
     private FeedsCfg    FeedsConfig    => Svc<ImportPlugin>.Plugin.FeedsConfig;
-
-    private Dictionary<FeedCfg, FlurlClient> CachedClients = new Dictionary<FeedCfg, FlurlClient>();
-
+    
     #endregion
 
 
