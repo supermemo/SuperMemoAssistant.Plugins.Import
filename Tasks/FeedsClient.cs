@@ -191,24 +191,32 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
               feedItem.Link,
               string.IsNullOrWhiteSpace(webCfg.Cookie) ? null : new FlurlClient()/*.Configure(s => s.CookiesEnabled = false)*/)
             ?? feedItem.Link.CreateRequest();
-          var httpResp = await httpReq.GetStringAsync();
 
-          if (httpResp != null)
+          try
           {
-            feedItem.Content = httpResp;
+            var httpResp = await httpReq.GetStringAsync();
+
+            if (httpResp != null)
+            {
+              feedItem.Content = httpResp;
+            }
+            else
+            {
+              feedItem.Content = null;
+              LogTo.Warning(
+                $"Failed to download content for feed {feedCfg.Name}, item title '{feedItem.Title}', link '{feedItem.Link}'.");
+            }
           }
-
-          else
+          catch (Flurl.Http.FlurlHttpException ex)
           {
-            feedItem.Content = null;
             LogTo.Warning(
-              $"Failed to download content for feed {feedCfg.Name}, item title '{feedItem.Title}', link '{feedItem.Link}'.");
+              ex, $"Failed to download content for feed {feedCfg.Name}, item title '{feedItem.Title}', link '{feedItem.Link}'.");
           }
         }
 
         else
         {
-          feedItem.Content = feedItem.Content ?? feedItem.Description;
+          feedItem.Content ??= feedItem.Description;
         }
 
         if (string.IsNullOrWhiteSpace(feedItem.Content))
