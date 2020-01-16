@@ -58,7 +58,6 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
   {
     #region Constructors
 
-    /// <inheritdoc />
     public WebsiteCfg()
     {
       UrlPattern = new ObservableCollection<UrlPattern>();
