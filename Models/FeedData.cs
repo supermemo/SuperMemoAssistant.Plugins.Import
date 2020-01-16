@@ -40,7 +40,6 @@ namespace SuperMemoAssistant.Plugins.Import.Models
   {
     #region Constructors
 
-    /// <inheritdoc />
     public FeedData(FeedCfg feedCfg, Feed feed)
     {
       FeedCfg = feedCfg;
