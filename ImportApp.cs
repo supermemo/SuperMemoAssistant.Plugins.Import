@@ -72,8 +72,7 @@ namespace SuperMemoAssistant.Plugins.Import
       foreach (var resDictSrc in ResourceDictionaries)
         Resources.MergedDictionaries.Add(new ResourceDictionary
         {
-          Source = new Uri(resDictSrc,
-                           UriKind.RelativeOrAbsolute)
+          Source = new Uri(resDictSrc, UriKind.RelativeOrAbsolute)
         });
     }
 

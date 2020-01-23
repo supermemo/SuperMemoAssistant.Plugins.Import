@@ -28,8 +28,6 @@
 #endregion
 
 
-
-
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -39,7 +37,7 @@ using SuperMemoAssistant.Plugins.Import.Configs;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Sys.Windows.Input;
 
-namespace SuperMemoAssistant.Plugins.Import.Models
+namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
 {
   public class FeedList : ObservableCollection<FeedCfg>
   {

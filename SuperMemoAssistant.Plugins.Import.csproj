@@ -59,8 +59,8 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\ControlzEx.3.0.2.4\lib\net462\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="DeviceId, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\DeviceId.4.4.0\lib\net40\DeviceId.dll</HintPath>
+    <Reference Include="DeviceId, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\DeviceId.4.5.0\lib\net40\DeviceId.dll</HintPath>
     </Reference>
     <Reference Include="FastMember, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FastMember.1.5.0\lib\net461\FastMember.dll</HintPath>
@@ -173,9 +173,9 @@
     <Compile Include="ImportApp.cs" />
     <Compile Include="ImportConst.cs" />
     <Compile Include="ImportPlugin.cs" />
-    <Compile Include="Models\FeedData.cs" />
-    <Compile Include="Models\FeedItemExt.cs" />
-    <Compile Include="Models\FeedList.cs" />
+    <Compile Include="Models\Feeds\FeedData.cs" />
+    <Compile Include="Models\Feeds\FeedItemExt.cs" />
+    <Compile Include="Models\Feeds\FeedList.cs" />
     <Compile Include="Models\FilterMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tasks\FeedsClient.cs" />
@@ -199,6 +199,10 @@
       <Project>{7F7B4A1F-01E1-440E-89DB-08F7D1D5A128}</Project>
       <Name>SuperMemoAssistant.Services.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="libs\SuperMemoAssistant.Plugins.Import.Common\SuperMemoAssistant.Plugins.Import.Common.csproj">
+      <Project>{1b4b5809-4108-4c73-b3fb-3a7609d97704}</Project>
+      <Name>SuperMemoAssistant.Plugins.Import.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -220,6 +224,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NativeMessaging\" />
   </ItemGroup>
   <Import Project="..\..\Services\SuperMemoAssistant.Services.Sentry\SuperMemoAssistant.Services.Sentry.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
