@@ -30,60 +30,13 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
-
-// ReSharper disable ClassNeverInstantiated.Global
+using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Browser;
+using SuperMemoAssistant.Sys.Remoting;
 
 namespace SuperMemoAssistant.Plugins.Import.Models
 {
-  internal class BrowserMessage
+  public interface IBrowserHostService
   {
-    #region Properties & Fields - Public
-
-    public MessageType Type { get; set; }
-
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
-
-    #endregion
-
-
-
-
-    #region Methods
-
-    public T GetData<T>()
-    {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
-    }
-
-    #endregion
+    RemoteTask<RespTabs> GetTabs();
   }
 }

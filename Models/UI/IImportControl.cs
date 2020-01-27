@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2020/01/24 10:10
-// Modified On:  2020/01/24 14:24
+// Modified On:  2020/01/25 14:26
 // Modified By:  Alexis
 
 #endregion
@@ -30,60 +29,13 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
+using System.Windows.Input;
 
-// ReSharper disable ClassNeverInstantiated.Global
-
-namespace SuperMemoAssistant.Plugins.Import.Models
+namespace SuperMemoAssistant.Plugins.Import.Models.UI
 {
-  internal class BrowserMessage
+  public interface IImportControl
   {
-    #region Properties & Fields - Public
-
-    public MessageType Type { get; set; }
-
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
-
-    #endregion
-
-
-
-
-    #region Methods
-
-    public T GetData<T>()
-    {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
-    }
-
-    #endregion
+    ICommand ImportCommand { get; }
+    ICommand CancelCommand { get; }
   }
 }

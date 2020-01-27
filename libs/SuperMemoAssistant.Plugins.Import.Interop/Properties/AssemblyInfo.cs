@@ -1,15 +1,15 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SuperMemoAssistant.Plugins.Import")]
+[assembly: AssemblyTitle("SuperMemoAssistant.Plugins.Import.Interop")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SuperMemoAssistant.Plugins.Import")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyProduct("SuperMemoAssistant.Plugins.Import.Interop")]
+[assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("cd2989cb-a123-40ad-995a-aa5a28fbbbfe")]
+[assembly: Guid("1b4b5809-4108-4c73-b3fb-3a7609d97704")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,7 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.1.14")]
-[assembly: AssemblyFileVersion("2.0.1.14")]
-
-[assembly: AssemblyInformationalVersion("2.0.1")]
+[assembly: AssemblyVersion("2.0.1.1")]
+[assembly: AssemblyFileVersion("2.0.1.1")]

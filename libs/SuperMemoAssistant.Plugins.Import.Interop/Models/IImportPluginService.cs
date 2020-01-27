@@ -22,7 +22,7 @@
 // 
 // 
 // Created On:   2020/01/24 10:10
-// Modified On:  2020/01/24 14:24
+// Modified On:  2020/01/24 15:01
 // Modified By:  Alexis
 
 #endregion
@@ -30,60 +30,20 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
-
-// ReSharper disable ClassNeverInstantiated.Global
+using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Requests;
+using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Plugin;
+using SuperMemoAssistant.Sys.Remoting;
 
 namespace SuperMemoAssistant.Plugins.Import.Models
 {
-  internal class BrowserMessage
+  public interface IImportPluginService
   {
-    #region Properties & Fields - Public
+    RespConnect Connect(string    extensionId);
+    RespConnect ConnectBrowser(string extensionId, string userAgent, string channel);
+    void        Disconnect(string extensionId);
+    void        KeepAlive();
 
-    public MessageType Type { get; set; }
-
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
-
-    #endregion
-
-
-
-
-    #region Methods
-
-    public T GetData<T>()
-    {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
-    }
-
-    #endregion
+    RemoteTask<RespImport> ImportUrls(ReqImportUrls urls);
+    RemoteTask<RespImport> ImportHtml(string html);
   }
 }

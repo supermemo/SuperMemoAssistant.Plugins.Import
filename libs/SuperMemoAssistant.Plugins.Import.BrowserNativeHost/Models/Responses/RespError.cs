@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2020/01/24 10:10
-// Modified On:  2020/01/24 14:24
+// Created On:   2020/01/24 18:07
+// Modified On:  2020/01/24 18:08
 // Modified By:  Alexis
 
 #endregion
@@ -30,59 +30,28 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
 
-// ReSharper disable ClassNeverInstantiated.Global
-
-namespace SuperMemoAssistant.Plugins.Import.Models
+namespace SuperMemoAssistant.Plugins.Import.Models.Responses
 {
-  internal class BrowserMessage
+  public class RespError : MessageBase
   {
-    #region Properties & Fields - Public
+    #region Constructors
 
-    public MessageType Type { get; set; }
-
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
+    /// <inheritdoc />
+    public RespError(MessageType type, string errorMsg) : base(type)
+    {
+      ErrorMsg = errorMsg;
+    }
 
     #endregion
 
 
 
 
-    #region Methods
+    #region Properties & Fields - Public
 
-    public T GetData<T>()
-    {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
-    }
+    public string ErrorMsg { get; }
 
     #endregion
   }

@@ -1,11 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:models="clr-namespace:SuperMemoAssistant.Plugins.Import.Models"
                     xmlns:configs="clr-namespace:SuperMemoAssistant.Plugins.Import.Configs"
                     xmlns:fa5="http://schemas.fontawesome.com/icons/"
-                    xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+                    xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+                    xmlns:feeds="clr-namespace:SuperMemoAssistant.Plugins.Import.Models.Feeds">
 
-  <DataTemplate DataType="{x:Type models:FeedList}">
+  <DataTemplate DataType="{x:Type feeds:FeedList}">
 
     <Grid Margin="0 10 0 0">
       <Grid.Resources>

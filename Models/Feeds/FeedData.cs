@@ -40,8 +40,8 @@ namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
 
     public FeedData(FeedCfg feedCfg, Feed feed)
     {
-      Configs.FeedCfg = feedCfg;
-      CodeHollow.FeedReader.Feed    = feed;
+      FeedCfg = feedCfg;
+      Feed    = feed;
     }
 
     #endregion

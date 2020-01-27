@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2020/01/24 10:10
-// Modified On:  2020/01/24 14:24
+// Created On:   2020/01/24 17:56
+// Modified On:  2020/01/24 18:00
 // Modified By:  Alexis
 
 #endregion
@@ -30,59 +30,34 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
+using System;
+using System.Collections.Generic;
+using SuperMemoAssistant.Plugins.Import.Models.Browser;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace SuperMemoAssistant.Plugins.Import.Models
+namespace SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Requests
 {
-  internal class BrowserMessage
+  [Serializable]
+  public class ReqImportUrls : MessageBase
   {
-    #region Properties & Fields - Public
+    #region Constructors
 
-    public MessageType Type { get; set; }
+    public ReqImportUrls() : base(MessageType.ImportTabs) { }
 
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
+    public ReqImportUrls(IEnumerable<BrowserTab> tabs) : base(MessageType.ImportTabs)
+    {
+      Tabs = tabs;
+    }
 
     #endregion
 
 
 
 
-    #region Methods
+    #region Properties & Fields - Public
 
-    public T GetData<T>()
-    {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
-    }
+    public IEnumerable<BrowserTab> Tabs { get; set; }
 
     #endregion
   }

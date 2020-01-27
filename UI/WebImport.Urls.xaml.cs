@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/09/03 18:15
-// Modified On:  2020/01/24 10:53
+// Modified On:  2020/01/25 13:14
 // Modified By:  Alexis
 
 #endregion
@@ -30,35 +29,26 @@
 
 
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using Forge.Forms;
 using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.Feeds;
+using SuperMemoAssistant.Plugins.Import.Models.UI;
 using SuperMemoAssistant.Plugins.Import.Tasks;
-using SuperMemoAssistant.Sys.Threading;
 using SuperMemoAssistant.Sys.Windows.Input;
 
 namespace SuperMemoAssistant.Plugins.Import.UI
 {
-  /// <summary>Interaction logic for FeedsImportWindow.xaml</summary>
-  public partial class FeedsImportWindow : Window
+  /// <summary>Interaction logic for WebImportUrls.xaml</summary>
+  public partial class WebImportUrls : UserControl, IImportControl
   {
     #region Constructors
 
-    public FeedsImportWindow(List<FeedData> feedsData, bool lockProtection)
+    public WebImportUrls()
     {
-      FeedsData = new ObservableCollection<FeedData>(feedsData);
-
       InitializeComponent();
-
-      ProtectionLock = lockProtection;
-
-      if (ProtectionLock)
-        new DelayedTask(() => Dispatcher.Invoke(() => ProtectionLock = false))
-          .Trigger(1000);
     }
 
     #endregion
@@ -68,10 +58,8 @@ namespace SuperMemoAssistant.Plugins.Import.UI
 
     #region Properties & Fields - Public
 
-    public ObservableCollection<FeedData> FeedsData      { get; }
-    public bool                           ProtectionLock { get; private set; }
-    public ICommand                       ImportCommand  => new AsyncRelayCommand(ImportFeeds, () => !ProtectionLock);
-    public ICommand                       CancelCommand  => new RelayCommand(Close, () => !ProtectionLock);
+    public ICommand ImportCommand => new AsyncRelayCommand(Import);
+    public ICommand CancelCommand => new RelayCommand(Close);
 
     #endregion
 
@@ -80,30 +68,39 @@ namespace SuperMemoAssistant.Plugins.Import.UI
 
     #region Methods
 
-    private void TreeView_Loaded(object sender, RoutedEventArgs e) { }
-
-    private void Window_KeyDown(object sender, KeyEventArgs e)
+    private async Task Import()
     {
-      switch (e.Key)
-      {
-        case Key.Enter:
-          BtnOk.SimulateClick();
-          break;
+      var urls = tbUrls.SplitLines();
 
-        case Key.Escape:
-          BtnCancel.SimulateClick();
-          break;
+      var (success, results) = await WebImporter.Instance.Import(urls);
+
+      if (success == false)
+      {
+        var msg = results.GetErrorString();
+        Show.Window().For(new Alert(msg, "Import: Error")).RunAsync();
       }
     }
 
-    private Task ImportFeeds()
+    private void Close()
     {
-      return FeedsImporter.Instance
-                        .ImportFeeds(FeedsData)
-                        .ContinueWith(t => Dispatcher.Invoke(Close));
+      Window.GetWindow(this).Close();
     }
 
-    private void Window_Loaded(object sender, RoutedEventArgs e) { }
+    private void OnKeyDown(object sender, KeyEventArgs e)
+    {
+      switch (e.Key)
+      {
+        case Key.Enter when Keyboard.Modifiers.HasFlag(ModifierKeys.Control):
+          ImportCommand.Execute(null);
+          e.Handled = true;
+          break;
+
+        case Key.Escape:
+          CancelCommand.Execute(null);
+          e.Handled = true;
+          break;
+      }
+    }
 
     #endregion
   }

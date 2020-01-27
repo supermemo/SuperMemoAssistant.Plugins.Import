@@ -6,7 +6,7 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/22 13:15
-// Modified On:  2019/04/25 19:53
+// Modified On:  2020/01/26 23:24
 // Modified By:  Alexis
 
 #endregion
@@ -30,6 +29,7 @@
 
 
 
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
@@ -37,15 +37,18 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Anotar.Serilog;
+using Microsoft.Win32;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop.SuperMemo.Core;
 using SuperMemoAssistant.Plugins.Import.Configs;
+using SuperMemoAssistant.Plugins.Import.Models;
 using SuperMemoAssistant.Plugins.Import.Tasks;
 using SuperMemoAssistant.Plugins.Import.UI;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.IO.Keyboard;
 using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Services.UI.Configuration;
+using SuperMemoAssistant.Sys.IO;
 using SuperMemoAssistant.Sys.IO.Devices;
 using SuperMemoAssistant.Sys.Remoting;
 
@@ -53,8 +56,18 @@ namespace SuperMemoAssistant.Plugins.Import
 {
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
+
   public class ImportPlugin : SentrySMAPluginBase<ImportPlugin>
   {
+    #region Properties & Fields - Non-Public
+
+    private ImportPluginService _importService;
+
+    #endregion
+
+
+
+
     #region Constructors
 
     public ImportPlugin()
@@ -108,13 +121,26 @@ namespace SuperMemoAssistant.Plugins.Import
 
       Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 
+      _importService = new ImportPluginService();
+
       Svc.HotKeyManager
          .RegisterGlobal(
-           "Import",
-           "Import content from the web",
+           "ImportTabs",
+           "Import content from a list of url",
+           HotKeyScope.Global,
+           new HotKey(Key.B, KeyModifiers.CtrlAltShift),
+           () => ImportFromTheWeb(ImportType.Url));
+      Svc.HotKeyManager
+         .RegisterGlobal(
+           "ImportBrowser",
+           "Import tabs from open browsers",
            HotKeyScope.Global,
            new HotKey(Key.A, KeyModifiers.CtrlAltShift),
-           ImportFromTheWeb);
+           () => ImportFromTheWeb(ImportType.BrowserTabs));
+
+      CreateBrowserRegistryKeys();
+
+      PublishService<IImportPluginService, ImportPluginService>(_importService, ImportConst.ChannelName);
     }
 
     /// <inheritdoc />
@@ -140,16 +166,39 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Methods
 
-    private void ImportFromTheWeb()
+    private void CreateBrowserRegistryKeys()
+    {
+      try
+      {
+        var         homePath = new DirectoryPath(AppDomain.CurrentDomain.BaseDirectory);
+        RegistryKey hkcu     = Registry.CurrentUser;
+
+        // Chrome
+        var chromeKey = hkcu.CreateSubKey(ImportConst.RegistryChromeKey);
+        chromeKey.SetValue("", homePath.CombineFile(ImportConst.ChromeManifestFilePath).FullPath.Replace('/', '\\'));
+
+        // Firefox
+        var firefoxKey = hkcu.CreateSubKey(ImportConst.RegistryFirefoxKey);
+        firefoxKey.SetValue("", homePath.CombineFile(ImportConst.FirefoxManifestFilePath).FullPath.Replace('/', '\\'));
+
+        hkcu.Close();
+      }
+      catch (Exception ex)
+      {
+        LogTo.Error(ex, "Failed to create registry keys for browsers native messaging");
+      }
+    }
+
+    private void ImportFromTheWeb(ImportType type)
     {
       Application.Current.Dispatcher.Invoke(
-        () => new ImportWindow().ShowAndActivate()
+        () => new ImportWindow(type).ShowAndActivate()
       );
     }
 
     public async Task DownloadAndImportFeeds(bool downloadInBackground = true, bool lockProtection = true)
     {
-      var feedsData = await FeedsClient.Instance.DownloadFeeds();
+      var feedsData = await FeedsImporter.Instance.DownloadFeeds();
 
       if (feedsData.Count == 0 || feedsData.All(fd => fd.NewItems.Count == 0))
       {

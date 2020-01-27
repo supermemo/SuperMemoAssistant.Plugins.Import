@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2020/01/24 10:10
-// Modified On:  2020/01/24 14:24
+// Created On:   2020/01/24 17:12
+// Modified On:  2020/01/24 17:24
 // Modified By:  Alexis
 
 #endregion
@@ -30,23 +30,43 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
+using System;
+using System.Collections.Generic;
+using SuperMemoAssistant.Interop.SuperMemo.Elements.Models;
 
-// ReSharper disable ClassNeverInstantiated.Global
-
-namespace SuperMemoAssistant.Plugins.Import.Models
+namespace SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Plugin
 {
-  internal class BrowserMessage
+  [Serializable]
+  public class RespImport : MessageBase
   {
+    #region Constructors
+
+    /// <inheritdoc />
+    public RespImport(MessageType type, bool success, List<ElemCreationResult> results) : base(type)
+    {
+      switch (type)
+      {
+        case MessageType.ImportHtml:
+        case MessageType.ImportTabs:
+          break;
+
+        default:
+          throw new NotSupportedException($"RespImport doesn't support MessageType {type}");
+      }
+
+      Success = success;
+      Results = results;
+    }
+
+    #endregion
+
+
+
+
     #region Properties & Fields - Public
 
-    public MessageType Type { get; set; }
-
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
+    public bool                     Success { get; }
+    public List<ElemCreationResult> Results { get; }
 
     #endregion
 
@@ -55,33 +75,10 @@ namespace SuperMemoAssistant.Plugins.Import.Models
 
     #region Methods
 
-    public T GetData<T>()
+    public void Deconstruct(out bool success, out List<ElemCreationResult> results)
     {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
+      success = Success;
+      results = Results;
     }
 
     #endregion

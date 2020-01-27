@@ -6,7 +6,7 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 23:06
-// Modified On:  2019/04/22 13:42
+// Created On:   2019/09/03 18:15
+// Modified On:  2020/01/24 10:53
 // Modified By:  Alexis
 
 #endregion
@@ -33,7 +33,7 @@
 using System.ComponentModel;
 using System.Linq;
 using Forge.Forms.Annotations;
-using SuperMemoAssistant.Plugins.Import.Models;
+using SuperMemoAssistant.Plugins.Import.Models.Feeds;
 using SuperMemoAssistant.Sys.ComponentModel;
 
 namespace SuperMemoAssistant.Plugins.Import.Configs
@@ -85,7 +85,11 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
     #region Properties Impl - Public
 
     /// <inheritdoc />
-    public bool IsChanged { get => _isChanged || Feeds.Any(f => f.IsChanged); set => _isChanged = value; }
+    public bool IsChanged
+    {
+      get => _isChanged || Feeds.Any(f => f.IsChanged);
+      set => _isChanged = value;
+    }
 
     #endregion
 

@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2020/01/24 10:10
-// Modified On:  2020/01/24 14:24
+// Modified On:  2020/01/26 23:20
 // Modified By:  Alexis
 
 #endregion
@@ -30,59 +29,25 @@
 
 
 
-using Newtonsoft.Json;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
-using SuperMemoAssistant.Sys.Converters.Json;
+using SuperMemoAssistant.Sys.IO;
 
-// ReSharper disable ClassNeverInstantiated.Global
-
-namespace SuperMemoAssistant.Plugins.Import.Models
+namespace SuperMemoAssistant.Plugins.Import
 {
-  internal class BrowserMessage
+  public static class ImportConst
   {
-    #region Properties & Fields - Public
+    #region Constants & Statics
 
-    public MessageType Type { get; set; }
+    public const string ChannelName     = "Import_Su4jWSsxeyWW9UBS";
+    public const int    DefaultPriority = 25;
 
-    [JsonConverter(typeof(JsonConverterObjectToString))]
-    public string Data { get; set; }
+    public const string RegistryFirefoxKey = @"Software\Mozilla\NativeMessagingHosts\supermemoassistant.plugins.import.browserextension";
+    public const string RegistryChromeKey =
+      @"Software\Google\Chrome\NativeMessagingHosts\supermemoassistant.plugins.import.browserextension";
 
-    #endregion
-
-
-
-
-    #region Methods
-
-    public T GetData<T>()
-    {
-      return Data.Deserialize<T>();
-    }
-    
-    public bool GetData<T>(out T data, out JsonException jsonEx)
-    {
-      data = default;
-      jsonEx = null;
-
-      if (Data == null)
-      {
-        jsonEx = new JsonException("Data is null");
-        return false;
-      }
-
-      try
-      {
-        data = Data.Deserialize<T>();
-
-        return true;
-      }
-      catch (JsonException ex)
-      {
-        jsonEx = ex;
-        return false;
-      }
-    }
+    public static readonly FilePath ChromeManifestFilePath =
+      new FilePath("SuperMemoAssistant.Plugins.Import.BrowserExtension.Manifest.Chrome.json");
+    public static readonly FilePath FirefoxManifestFilePath =
+      new FilePath("SuperMemoAssistant.Plugins.Import.BrowserExtension.Manifest.Firefox.json");
 
     #endregion
   }

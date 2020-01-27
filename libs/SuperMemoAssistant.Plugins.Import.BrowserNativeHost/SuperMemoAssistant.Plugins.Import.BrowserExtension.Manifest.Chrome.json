@@ -1,0 +1,9 @@
+﻿{
+  "name": "supermemoassistant.plugins.import.browserextension",
+  "description": "Import web content in your SuperMemo collection.",
+  "path": "SuperMemoAssistant.Plugins.Import.BrowserNativeHost.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://denlpjonbjgllpiljpkbjbkbjalmlioi/"
+  ]
+}

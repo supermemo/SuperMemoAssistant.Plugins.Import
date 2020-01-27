@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SuperMemoAssistant.Plugins.Import.UI"
-        xmlns:models1="clr-namespace:SuperMemoAssistant.Plugins.Import.Models"
+        xmlns:feeds="clr-namespace:SuperMemoAssistant.Plugins.Import.Models.Feeds"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         KeyDown="Window_KeyDown"
@@ -26,7 +26,7 @@
               Loaded="TreeView_Loaded">
       <TreeView.Resources>
         <HierarchicalDataTemplate ItemsSource="{Binding NewItems}"
-                                  DataType="{x:Type models1:FeedData}">
+                                  DataType="{x:Type feeds:FeedData}">
           <TextBlock FontSize="13"
                      FontWeight="Bold"
                      Margin="1 2 0 2">
@@ -39,7 +39,7 @@
           </TextBlock>
         </HierarchicalDataTemplate>
 
-        <DataTemplate DataType="{x:Type models1:FeedItemExt}">
+        <DataTemplate DataType="{x:Type feeds:FeedItemExt}">
           <StackPanel Orientation="Horizontal"
                       Margin="2">
 
