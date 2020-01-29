@@ -50,7 +50,7 @@
             <Border Grid.Row="1"
                     BorderThickness="0 1 0 0"
                     BorderBrush="{DynamicResource AccentColorBrush}">
-              <Grid Margin="4 4 4 4">
+              <Grid Margin="4">
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*" />
                   <ColumnDefinition Width="auto" />

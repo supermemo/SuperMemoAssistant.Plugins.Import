@@ -21,7 +21,6 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <!-- Accent and AppTheme setting -->
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Clean/Clean.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Blue.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
@@ -34,8 +33,7 @@
             <componentModel:SortDescription PropertyName="BrowserName" Direction="Ascending" />
           </CollectionViewSource.SortDescriptions>
           <CollectionViewSource.GroupDescriptions>
-            <PropertyGroupDescription PropertyName="BrowserName">
-            </PropertyGroupDescription>
+            <PropertyGroupDescription PropertyName="BrowserName" />
           </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
