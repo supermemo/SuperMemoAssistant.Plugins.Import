@@ -102,7 +102,14 @@ namespace SuperMemoAssistant.Plugins.Import.UI
       {
         var msg = results.GetErrorString();
         Show.Window().For(new Alert(msg, "Import: Error")).RunAsync();
+
+        for (int i = results.Count - 1; i >= 0; i--)
+          if (results[i].Success == false)
+            Tabs.RemoveAt(i);
       }
+
+      else
+        Close();
     }
 
     private void Close()

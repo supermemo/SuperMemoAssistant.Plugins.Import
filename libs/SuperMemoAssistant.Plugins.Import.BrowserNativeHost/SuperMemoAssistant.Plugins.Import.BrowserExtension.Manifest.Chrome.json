@@ -4,6 +4,7 @@
   "path": "SuperMemoAssistant.Plugins.Import.BrowserNativeHost.exe",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://denlpjonbjgllpiljpkbjbkbjalmlioi/"
+    "chrome-extension://gddbgpgllkcfljmhpngpmjglhpbmmgak/",
+    "chrome-extension://hcnpikjdiaedadmfkflhilndgailpogj/"
   ]
 }
