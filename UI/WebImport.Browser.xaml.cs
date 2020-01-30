@@ -53,6 +53,9 @@ namespace SuperMemoAssistant.Plugins.Import.UI
     {
       InitializeComponent();
 
+      CancelCommand = new RelayCommand(Close);
+      ImportCommand = new AsyncRelayCommand(Import, () => IsAnyBrowserConnected);
+
       RefreshCommand.Execute(null);
     }
 
@@ -76,8 +79,8 @@ namespace SuperMemoAssistant.Plugins.Import.UI
 
     #region Properties Impl - Public
 
-    public ICommand ImportCommand => new AsyncRelayCommand(Import, () => IsAnyBrowserConnected);
-    public ICommand CancelCommand => new RelayCommand(Close);
+    public ICommand ImportCommand { get; }
+    public ICommand CancelCommand { get; }
 
     #endregion
 
