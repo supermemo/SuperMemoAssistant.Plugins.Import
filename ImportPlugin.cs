@@ -175,11 +175,11 @@ namespace SuperMemoAssistant.Plugins.Import
 
         // Chrome
         var chromeKey = hkcu.CreateSubKey(ImportConst.RegistryChromeKey);
-        chromeKey.SetValue("", homePath.CombineFile(ImportConst.ChromeManifestFilePath).FullPath.Replace('/', '\\'));
+        chromeKey.SetValue("", homePath.CombineFile(ImportConst.ChromeManifestFilePath).FullPathWin);
 
         // Firefox
         var firefoxKey = hkcu.CreateSubKey(ImportConst.RegistryFirefoxKey);
-        firefoxKey.SetValue("", homePath.CombineFile(ImportConst.FirefoxManifestFilePath).FullPath.Replace('/', '\\'));
+        firefoxKey.SetValue("", homePath.CombineFile(ImportConst.FirefoxManifestFilePath).FullPathWin);
 
         hkcu.Close();
       }

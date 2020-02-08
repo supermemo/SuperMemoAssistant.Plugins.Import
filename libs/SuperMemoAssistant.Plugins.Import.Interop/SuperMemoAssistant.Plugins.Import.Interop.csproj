@@ -57,7 +57,9 @@
     <Compile Include="Models\NativeMessaging\Responses\Plugin\RespImport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Core\SuperMemoAssistant.Interop\SuperMemoAssistant.Interop.csproj">
       <Project>{fd0e1be8-bed3-4ab0-a9c8-022a2dbc8450}</Project>

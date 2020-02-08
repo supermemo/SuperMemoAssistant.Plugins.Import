@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Anotar.Serilog;
@@ -45,6 +46,7 @@ using SuperMemoAssistant.Plugins.Import.Extensions;
 using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging;
 using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Plugin;
 using SuperMemoAssistant.Services;
+using SuperMemoAssistant.Sys.Net;
 
 namespace SuperMemoAssistant.Plugins.Import.Tasks
 {
@@ -120,11 +122,24 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
       try
       {
-        var httpReq = cfg?.CreateRequest(
-            url,
-            string.IsNullOrWhiteSpace(cfg.Cookie) ? null : new FlurlClient() /*.Configure(s => s.CookiesEnabled = false)*/)
-          ?? url.CreateRequest();
-        var content = await httpReq.GetStringAsync();
+        Uri uri = new Uri(url);
+        string content;
+
+        switch (uri.Scheme)
+        {
+          case UriEx.UriSchemeHttp:
+          case UriEx.UriSchemeHttps:
+            content = await DownloadHttp(url, cfg);
+            break;
+
+          case UriEx.UriSchemeFile:
+            content = await LoadFile(url);
+            break;
+
+          default:
+            LogTo.Warning($"Scheme {uri.Scheme} is not supported. {url} will be skipped.");
+            return default;
+        }
 
         if (content == null)
         {
@@ -143,6 +158,25 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
         return default;
       }
+    }
+
+    private async Task<string> DownloadHttp(string url, WebsiteCfg cfg)
+    {
+      var httpReq = cfg?.CreateRequest(
+          url,
+          string.IsNullOrWhiteSpace(cfg.Cookie) ? null : new FlurlClient() /*.Configure(s => s.CookiesEnabled = false)*/)
+        ?? url.CreateRequest();
+
+      return await httpReq.GetStringAsync();
+    }
+
+    private async Task<string> LoadFile(string url)
+    {
+      if (File.Exists(url) == false)
+        return null;
+
+      using (var sr = File.OpenText(url))
+        return await sr.ReadToEndAsync();
     }
 
     #endregion
