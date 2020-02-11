@@ -39,7 +39,6 @@ using System.Windows.Input;
 using Anotar.Serilog;
 using Microsoft.Win32;
 using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Interop.SuperMemo.Core;
 using SuperMemoAssistant.Plugins.Import.Configs;
 using SuperMemoAssistant.Plugins.Import.Models;
 using SuperMemoAssistant.Plugins.Import.Tasks;
@@ -82,9 +81,9 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Properties & Fields - Public
 
-    public WebsitesCfg     WebConfig    { get; private set; }
-    public FeedsCfg        FeedsConfig  { get; private set; }
-    public ImportGlobalCfg GlobalConfig { get; private set; }
+    public WebsitesCfg WebConfig => ImportConfig.Websites;
+    public FeedsCfg FeedsConfig => ImportConfig.Feeds;
+    public ImportCollectionCfg ImportConfig { get; private set; }
 
     #endregion
 
@@ -108,16 +107,7 @@ namespace SuperMemoAssistant.Plugins.Import
     /// <inheritdoc />
     protected override void PluginInit()
     {
-      GlobalConfig = Svc.Configuration.Load<ImportGlobalCfg>().Result ?? new ImportGlobalCfg();
-
-      var colKno = Svc.SM.Collection.GetKnoFilePath();
-      var colCfg = GlobalConfig.CollectionConfigs.SafeGet(colKno);
-
-      if (colCfg == null)
-        GlobalConfig.CollectionConfigs[colKno] = colCfg = new ImportCollectionCfg();
-
-      FeedsConfig = colCfg.Feeds;
-      WebConfig   = colCfg.Websites;
+      ImportConfig = Svc.Configuration.Load<ImportCollectionCfg>().Result ?? new ImportCollectionCfg();
 
       Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 
@@ -227,7 +217,7 @@ namespace SuperMemoAssistant.Plugins.Import
 
     private void SaveConfig(INotifyPropertyChanged config)
     {
-      Svc.Configuration.Save<ImportGlobalCfg>(GlobalConfig).RunAsync();
+      Svc.CollectionConfiguration.Save<ImportCollectionCfg>(ImportConfig).RunAsync();
     }
 
     #endregion

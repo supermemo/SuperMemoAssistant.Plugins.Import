@@ -166,7 +166,6 @@
     <Compile Include="Configs\FeedCfg.cs" />
     <Compile Include="Configs\FeedsCfg.cs" />
     <Compile Include="Configs\ImportCollectionCfg.cs" />
-    <Compile Include="Configs\ImportGlobalCfg.cs" />
     <Compile Include="Configs\WebsiteCfg.cs" />
     <Compile Include="Configs\WebsitesCfg.cs" />
     <Compile Include="Extensions\DynamicStringEx.cs" />
