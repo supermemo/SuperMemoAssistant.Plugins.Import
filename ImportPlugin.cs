@@ -107,7 +107,7 @@ namespace SuperMemoAssistant.Plugins.Import
     /// <inheritdoc />
     protected override void PluginInit()
     {
-      ImportConfig = Svc.Configuration.Load<ImportCollectionCfg>().Result ?? new ImportCollectionCfg();
+      ImportConfig = Svc.CollectionConfiguration.Load<ImportCollectionCfg>().Result ?? new ImportCollectionCfg();
 
       Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 

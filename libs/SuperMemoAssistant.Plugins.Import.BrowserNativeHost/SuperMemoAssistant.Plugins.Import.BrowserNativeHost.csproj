@@ -149,7 +149,7 @@
     <Error Condition="!Exists('..\..\..\..\..\packages\Fody.6.1.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\..\..\packages\Fody.6.1.0\build\Fody.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /h /i /d /c /k /e /r /y "$(TargetDir)*" "%25AppData%25\SuperMemoAssistant\Plugins\Development\SuperMemoAssistant.Plugins.Import"</PostBuildEvent>
+    <PostBuildEvent>xcopy /h /i /d /c /k /e /r /y "$(TargetDir)*" "%25LocalAppData%25\SuperMemoAssistant\Plugins\Development\SuperMemoAssistant.Plugins.Import"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\..\..\..\packages\Fody.6.1.0\build\Fody.targets" Condition="Exists('..\..\..\..\..\packages\Fody.6.1.0\build\Fody.targets')" />
 </Project>
