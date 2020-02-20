@@ -43,9 +43,6 @@
       <HintPath>..\..\..\..\..\packages\Anotar.Serilog.Fody.5.1.0\lib\net452\Anotar.Serilog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DeviceId, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\DeviceId.4.5.0\lib\net40\DeviceId.dll</HintPath>
-    </Reference>
     <Reference Include="Lyre, Version=1.0.10.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\Lyre.1.0.10\lib\netstandard2.0\Lyre.dll</HintPath>
     </Reference>
@@ -63,18 +60,6 @@
     </Reference>
     <Reference Include="Nito.Disposables, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\Nito.Disposables.2.0.1\lib\net461\Nito.Disposables.dll</HintPath>
-    </Reference>
-    <Reference Include="Sentry, Version=2.0.1.0, Culture=neutral, PublicKeyToken=fba2ec45388e2af0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\Sentry.2.0.1\lib\net461\Sentry.dll</HintPath>
-    </Reference>
-    <Reference Include="Sentry.PlatformAbstractions, Version=1.1.0.0, Culture=neutral, PublicKeyToken=fba2ec45388e2af0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\Sentry.PlatformAbstractions.1.1.0\lib\net471\Sentry.PlatformAbstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Sentry.Protocol, Version=2.0.0.0, Culture=neutral, PublicKeyToken=fba2ec45388e2af0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\Sentry.Protocol.2.0.0\lib\net46\Sentry.Protocol.dll</HintPath>
-    </Reference>
-    <Reference Include="Sentry.Serilog, Version=2.0.1.0, Culture=neutral, PublicKeyToken=fba2ec45388e2af0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\packages\Sentry.Serilog.2.0.1\lib\net461\Sentry.Serilog.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\..\packages\Serilog.2.9.0\lib\net46\Serilog.dll</HintPath>
@@ -133,13 +118,16 @@
       <Project>{fd0e1be8-bed3-4ab0-a9c8-022a2dbc8450}</Project>
       <Name>SuperMemoAssistant.Interop</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Services\SuperMemoAssistant.Services.Sentry\SuperMemoAssistant.Services.Sentry.csproj">
+      <Project>{298d380e-e3c0-4d34-a128-8a9d0a4bf196}</Project>
+      <Name>SuperMemoAssistant.Services.Sentry</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperMemoAssistant.Plugins.Import.Interop\SuperMemoAssistant.Plugins.Import.Interop.csproj">
       <Project>{1b4b5809-4108-4c73-b3fb-3a7609d97704}</Project>
       <Name>SuperMemoAssistant.Plugins.Import.Interop</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
-  <Import Project="..\..\..\..\Services\SuperMemoAssistant.Services.Sentry\SuperMemoAssistant.Services.Sentry.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
