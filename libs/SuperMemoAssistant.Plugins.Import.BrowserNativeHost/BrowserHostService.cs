@@ -21,7 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Modified On:  2020/01/26 17:29
+// Modified On:  2020/02/25 14:09
 // Modified By:  Alexis
 
 #endregion
@@ -39,11 +39,10 @@ using Nito.AsyncEx;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Plugins.Import.Models;
 using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Plugin;
-using SuperMemoAssistant.Sys;
 
 namespace SuperMemoAssistant.Plugins.Import
 {
-  public partial class BrowserHostService : PerpetualMarshalByRefObject
+  public partial class BrowserHostService : MarshalByRefObject
   {
     #region Properties & Fields - Non-Public
 
@@ -82,6 +81,18 @@ namespace SuperMemoAssistant.Plugins.Import
 
 
 
+    #region Methods Impl
+
+    public override object InitializeLifetimeService()
+    {
+      return null;
+    }
+
+    #endregion
+
+
+
+
     #region Methods
 
     public async Task Run()
@@ -94,7 +105,6 @@ namespace SuperMemoAssistant.Plugins.Import
         _ipcService = new IpcService(this);
 
         while (true)
-        {
           try
           {
             var response = await _host.Read<BrowserMessage>();
@@ -105,7 +115,6 @@ namespace SuperMemoAssistant.Plugins.Import
           {
             LogTo.Error(jsonEx, "Invalid message received");
           }
-        }
       }
       catch (EndOfStreamException)
       {
@@ -142,7 +151,7 @@ namespace SuperMemoAssistant.Plugins.Import
           return true;
         }
         catch (EndOfStreamException) { }
-        
+
         return false;
       }
     }
@@ -150,7 +159,6 @@ namespace SuperMemoAssistant.Plugins.Import
     public async Task OnPluginDisconnected()
     {
       using (await _pluginSvcLock.LockAsync())
-      {
         if (PluginSvc != null)
         {
           PluginSvc = null;
@@ -161,8 +169,7 @@ namespace SuperMemoAssistant.Plugins.Import
           }
           catch (EndOfStreamException) { }
         }
-      }
-      
+
       _ipcService.OnDisconnected().RunAsync();
     }
 

@@ -29,7 +29,7 @@
 
 
 
-using SuperMemoAssistant.Sys.IO;
+using Extensions.System.IO;
 
 namespace SuperMemoAssistant.Plugins.Import
 {

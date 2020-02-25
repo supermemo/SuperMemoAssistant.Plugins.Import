@@ -33,12 +33,12 @@
 using System;
 using System.Linq;
 using Anotar.Serilog;
+using PluginManager.Interop.Sys;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Plugins.Import.Models;
 using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Requests;
 using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Plugin;
 using SuperMemoAssistant.Plugins.Import.Tasks;
-using SuperMemoAssistant.Sys;
 using SuperMemoAssistant.Sys.Remoting;
 
 namespace SuperMemoAssistant.Plugins.Import

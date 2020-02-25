@@ -21,7 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Modified On:  2020/01/26 23:24
+// Modified On:  2020/02/21 16:46
 // Modified By:  Alexis
 
 #endregion
@@ -47,7 +47,7 @@ using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.IO.Keyboard;
 using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Services.UI.Configuration;
-using SuperMemoAssistant.Sys.IO;
+using Extensions.System.IO;
 using SuperMemoAssistant.Sys.IO.Devices;
 using SuperMemoAssistant.Sys.Remoting;
 
@@ -70,6 +70,7 @@ namespace SuperMemoAssistant.Plugins.Import
     #region Constructors
 
     public ImportPlugin()
+      : base("https://a63c3dad9552434598dae869d2026696@sentry.io/1362046")
     {
       ServicePointManager.DefaultConnectionLimit = 5;
     }
@@ -81,8 +82,8 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Properties & Fields - Public
 
-    public WebsitesCfg WebConfig => ImportConfig.Websites;
-    public FeedsCfg FeedsConfig => ImportConfig.Feeds;
+    public WebsitesCfg         WebConfig    => ImportConfig.Websites;
+    public FeedsCfg            FeedsConfig  => ImportConfig.Feeds;
     public ImportCollectionCfg ImportConfig { get; private set; }
 
     #endregion
