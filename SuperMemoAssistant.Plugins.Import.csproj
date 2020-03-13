@@ -23,6 +23,15 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>True</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.IncrementWithResetOnIncrease</AssemblyVersionSettings>
+    <UpdatePackageVersion>False</UpdatePackageVersion>
+    <AssemblyInfoVersionType>SettingsVersion</AssemblyInfoVersionType>
+    <InheritWinAppVersionFrom>None</InheritWinAppVersionFrom>
+    <AssemblyFileVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.IncrementWithResetOnIncrease</AssemblyFileVersionSettings>
+    <AssemblyInfoVersionSettings>IncrementOnDemand.IncrementOnDemand.IncrementOnDemand.None</AssemblyInfoVersionSettings>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +56,9 @@
   <ItemGroup>
     <Reference Include="Anotar.Serilog, Version=5.1.0.0, Culture=neutral, PublicKeyToken=9d5b24f0733c26f7, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Anotar.Serilog.Fody.5.1.0\lib\net452\Anotar.Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=9.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoMapper.9.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="CodeHollow.FeedReader, Version=1.2.1.0, Culture=neutral, PublicKeyToken=66d870f2b3d70f48, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\CodeHollow.FeedReader.1.2.1\lib\net452\CodeHollow.FeedReader.dll</HintPath>
@@ -177,8 +189,8 @@
     <Reference Include="SuperMemoAssistant.Services.Sentry, Version=1.0.1.14, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\SuperMemoAssistant.Services.Sentry.1.0.1.14\lib\Net472\SuperMemoAssistant.Services.Sentry.dll</HintPath>
     </Reference>
-    <Reference Include="SuperMemoAssistant.Services.UI, Version=2.0.3.13, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\SuperMemoAssistant.Services.UI.2.0.3.13\lib\net472\SuperMemoAssistant.Services.UI.dll</HintPath>
+    <Reference Include="SuperMemoAssistant.Services.UI, Version=2.0.3.18, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\SuperMemoAssistant.Services.UI.2.0.3.18\lib\net472\SuperMemoAssistant.Services.UI.dll</HintPath>
     </Reference>
     <Reference Include="Svg, Version=3.0.0.0, Culture=neutral, PublicKeyToken=12a0bac221edeae2, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Svg.3.0.102\lib\net452\Svg.dll</HintPath>

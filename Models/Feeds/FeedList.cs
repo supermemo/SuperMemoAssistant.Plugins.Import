@@ -74,7 +74,7 @@ namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
     private async Task NewFeed()
     {
       var feed = new FeedCfg();
-      var res  = await Show.Window().For<FeedCfg>(feed);
+      var res  = await feed.ShowWindow();
 
       if (res.Action is "cancel")
         return;
@@ -90,7 +90,7 @@ namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
 
     private Task EditFeed(FeedCfg feed)
     {
-      return Show.Window().For<FeedCfg>(feed);
+      return feed.ShowWindow();
     }
 
     private Task RunNow()

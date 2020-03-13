@@ -6,7 +6,7 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/22 15:02
-// Modified On:  2019/04/29 12:56
+// Modified On:  2020/03/12 13:12
 // Modified By:  Alexis
 
 #endregion
@@ -39,6 +38,7 @@ using Newtonsoft.Json;
 using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.HTML.Models;
+using SuperMemoAssistant.Services.UI.Configuration;
 using SuperMemoAssistant.Services.UI.Configuration.ElementPicker;
 using SuperMemoAssistant.Services.UI.Forms.Types;
 
@@ -46,15 +46,15 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 {
   [Form(Mode = DefaultFields.None)]
   [Title("Website config",
-    IsVisible = "{Env DialogHostContext}")]
+         IsVisible = "{Env DialogHostContext}")]
   [DialogAction("cancel",
-    "Cancel",
-    IsCancel = true)]
+                "Cancel",
+                IsCancel = true)]
   [DialogAction("save",
-    "Save",
-    IsDefault = true,
-    Validates = true)]
-  public class WebsiteCfg : IElementPickerCallback, INotifyPropertyChanged
+                "Save",
+                IsDefault = true,
+                Validates = true)]
+  public class WebsiteCfg : CfgBase<WebsiteCfg>, IElementPickerCallback, INotifyPropertyChanged
   {
     #region Constructors
 
@@ -104,19 +104,19 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 
     [Field(Name = "Priority (%)")]
     [Value(Must.BeGreaterThanOrEqualTo,
-      0,
-      StrictValidation = true)]
+           0,
+           StrictValidation = true)]
     [Value(Must.BeLessThanOrEqualTo,
-      100,
-      StrictValidation = true)]
+           100,
+           StrictValidation = true)]
     public double Priority { get; set; } = ImportConst.DefaultPriority;
 
     [JsonIgnore]
     [Action(ElementPicker.ElementPickerAction,
-      "Browse",
-      Placement = Placement.Inline)]
-    [Field(Name  = "Root Element",
-      IsReadOnly = true)]
+            "Browse",
+            Placement = Placement.Inline)]
+    [Field(Name       = "Root Element",
+           IsReadOnly = true)]
     public string ElementField => RootElement == null
       ? "N/A"
       : RootElement.ToString();
@@ -179,12 +179,12 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
     {
       UrlPatternField = new CrudList<UrlPattern>("Configured urls:", UrlPattern)
       {
-        Height = new GridLength(120.0),
-        SortingDirection = ListSortDirection.Descending,
+        Height              = new GridLength(120.0),
+        SortingDirection    = ListSortDirection.Descending,
         SortingPropertyName = "Priority"
       };
     }
-    
+
     private void OnTitleRegexPatternChanged()
     {
       try
@@ -198,7 +198,7 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
         // Ignored
       }
     }
-    
+
     private void OnDateRegexPatternChanged()
     {
       try

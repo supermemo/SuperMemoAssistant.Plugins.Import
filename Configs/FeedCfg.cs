@@ -6,7 +6,7 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
@@ -21,8 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   2019/04/10 23:58
-// Modified On:  2019/04/25 14:03
+// Modified On:  2020/03/12 13:11
 // Modified By:  Alexis
 
 #endregion
@@ -36,21 +35,22 @@ using System.ComponentModel;
 using System.Linq;
 using Forge.Forms.Annotations;
 using Newtonsoft.Json;
+using SuperMemoAssistant.Services.UI.Configuration;
 using SuperMemoAssistant.Sys.ComponentModel;
 
 namespace SuperMemoAssistant.Plugins.Import.Configs
 {
   [Form(Mode = DefaultFields.None)]
   [Title("Feed Settings",
-    IsVisible = "{Env DialogHostContext}")]
+         IsVisible = "{Env DialogHostContext}")]
   [DialogAction("cancel",
-    "Cancel",
-    IsCancel = true)]
+                "Cancel",
+                IsCancel = true)]
   [DialogAction("save",
-    "Save",
-    IsDefault = true,
-    Validates = true)]
-  public class FeedCfg : INotifyPropertyChangedEx
+                "Save",
+                IsDefault = true,
+                Validates = true)]
+  public class FeedCfg : CfgBase<FeedCfg>, INotifyPropertyChangedEx
   {
     #region Constructors
 
