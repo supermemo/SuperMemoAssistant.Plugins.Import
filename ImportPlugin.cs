@@ -137,12 +137,12 @@ namespace SuperMemoAssistant.Plugins.Import
     /// <inheritdoc />
     public override void ShowSettings()
     {
-      Application.Current.Dispatcher.Invoke(
-        () => new ConfigurationWindow(WebConfig, FeedsConfig)
-        {
-          SaveMethod = SaveConfig
-        }.ShowAndActivate()
-      );
+      var cfgWdw = ConfigurationWindow.ShowAndActivate(WebConfig, FeedsConfig);
+
+      if (cfgWdw == null)
+        return;
+
+      cfgWdw.SaveMethod = SaveConfig;
     }
 
     protected override Application CreateApplication()
