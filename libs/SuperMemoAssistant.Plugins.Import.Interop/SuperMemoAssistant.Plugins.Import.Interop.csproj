@@ -30,7 +30,7 @@
       <Version>0.1.0.3</Version>
     </PackageReference>
     <PackageReference Include="MSBuild.Tools">
-      <Version>0.2.41</Version>
+      <Version>0.2.58</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
