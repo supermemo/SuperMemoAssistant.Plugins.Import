@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 using SuperMemoAssistant.Extensions;
 using SuperMemoAssistant.Interop;
 using SuperMemoAssistant.Services.Configuration;
-using SuperMemoAssistant.Services.IO.Logger;
+using SuperMemoAssistant.Services.IO.Diagnostics;
 using SuperMemoAssistant.Services.Sentry;
 
 // ReSharper disable LocalizableElement
@@ -72,10 +72,12 @@ namespace SuperMemoAssistant.Plugins.Import
 
       string ext;
 
-      if (args[0].StartsWith("chrome-extension://"))
+      if (args[0].StartsWith("chrome-extension://", StringComparison.InvariantCultureIgnoreCase))
         ext = args[0];
 
-      else if (args.Length >= 2 && args[1].Length == 38 && args[1].StartsWith("{") && args[1].EndsWith("}"))
+      else if (args.Length >= 2 && args[1].Length == 38
+        && args[1].StartsWith("{", StringComparison.InvariantCultureIgnoreCase)
+        && args[1].EndsWith("}", StringComparison.InvariantCultureIgnoreCase))
         ext = args[1];
 
       else

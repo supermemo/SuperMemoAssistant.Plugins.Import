@@ -32,6 +32,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Anotar.Serilog;
@@ -260,7 +261,7 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
               .ConfigureWeb(webCfg)
               .WithReference(
                 // ReSharper disable once PossibleInvalidOperationException
-                r => r.WithDate(feedItem.PublishingDate?.ToString() ?? webCfg.ParseDateString(html))
+                r => r.WithDate(feedItem.PublishingDate?.ToString(CultureInfo.InvariantCulture) ?? webCfg.ParseDateString(html))
                       .WithTitle(feedItem.Title ?? webCfg.ParseTitle(html))
                       .WithAuthor(feedItem.Author)
                       .WithComment(StringEx.Join(", ", feedItem.Categories))

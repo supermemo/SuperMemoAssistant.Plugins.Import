@@ -108,7 +108,7 @@ namespace SuperMemoAssistant.Plugins.Import
     /// <inheritdoc />
     protected override void PluginInit()
     {
-      ImportConfig = Svc.CollectionConfiguration.Load<ImportCollectionCfg>().Result ?? new ImportCollectionCfg();
+      ImportConfig = Svc.CollectionConfiguration.Load<ImportCollectionCfg>() ?? new ImportCollectionCfg();
 
       Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 
@@ -118,14 +118,14 @@ namespace SuperMemoAssistant.Plugins.Import
          .RegisterGlobal(
            "ImportTabs",
            "Import content from a list of url",
-           HotKeyScope.Global,
+           HotKeyScopes.Global,
            new HotKey(Key.B, KeyModifiers.CtrlAltShift),
            () => ImportFromTheWeb(ImportType.Url));
       Svc.HotKeyManager
          .RegisterGlobal(
            "ImportBrowser",
            "Import tabs from open browsers",
-           HotKeyScope.Global,
+           HotKeyScopes.Global,
            new HotKey(Key.A, KeyModifiers.CtrlAltShift),
            () => ImportFromTheWeb(ImportType.BrowserTabs));
 
@@ -218,7 +218,7 @@ namespace SuperMemoAssistant.Plugins.Import
 
     private void SaveConfig(INotifyPropertyChanged config)
     {
-      Svc.CollectionConfiguration.Save<ImportCollectionCfg>(ImportConfig).RunAsync();
+      Svc.CollectionConfiguration.SaveAsync<ImportCollectionCfg>(ImportConfig).RunAsync();
     }
 
     #endregion

@@ -52,13 +52,13 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 
     public CategoryFilter(string inlineFilter)
     {
-      if (inlineFilter.StartsWith("+"))
+      if (inlineFilter.StartsWith("+", StringComparison.InvariantCultureIgnoreCase))
       {
         Category = inlineFilter.Substring(1);
         Mode     = FilterMode.Include;
       }
 
-      else if (inlineFilter.StartsWith("-"))
+      else if (inlineFilter.StartsWith("-", StringComparison.InvariantCultureIgnoreCase))
       {
         Category = inlineFilter.Substring(1);
         Mode     = FilterMode.Exclude;
@@ -115,7 +115,7 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
       if (ReferenceEquals(this, other))
         return true;
 
-      return string.Equals(Category, other.Category);
+      return string.Equals(Category, other.Category, StringComparison.InvariantCultureIgnoreCase);
     }
 
     #endregion
@@ -155,7 +155,7 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
         if (x.GetType() != y.GetType())
           return false;
 
-        return string.Equals(x.Category, y.Category);
+        return string.Equals(x.Category, y.Category, StringComparison.InvariantCultureIgnoreCase);
       }
 
       public int GetHashCode(CategoryFilter obj)
