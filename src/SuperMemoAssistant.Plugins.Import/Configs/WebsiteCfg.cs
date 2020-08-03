@@ -29,8 +29,11 @@
 
 
 
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using System.Windows;
 using Forge.Forms.Annotations;
@@ -44,6 +47,7 @@ using SuperMemoAssistant.Services.UI.Forms.Types;
 
 namespace SuperMemoAssistant.Plugins.Import.Configs
 {
+  [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "<Pending>")]
   [Form(Mode = DefaultFields.None)]
   [Title("Website config",
          IsVisible = "{Env DialogHostContext}")]
@@ -136,6 +140,8 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
 
     //
     // Helpers
+
+    protected override IEnumerable<Type> InnerTypesToMap => new[] { typeof(UrlPattern), typeof(HtmlFilters) };
 
     [JsonIgnore]
     public ObservableCollection<HtmlFilter> Filters => FiltersRoot.Children;
