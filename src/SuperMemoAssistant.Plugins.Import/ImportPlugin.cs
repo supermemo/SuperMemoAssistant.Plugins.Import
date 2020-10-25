@@ -53,6 +53,8 @@ using SuperMemoAssistant.Sys.Remoting;
 
 namespace SuperMemoAssistant.Plugins.Import
 {
+  using Interop.SuperMemo.Core;
+
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
 
@@ -106,13 +108,25 @@ namespace SuperMemoAssistant.Plugins.Import
     #region Methods Impl
 
     /// <inheritdoc />
-    protected override void PluginInit()
+    protected override void OnCollectionSelected(SMCollection col)
     {
+      base.OnCollectionSelected(col);
+
       ImportConfig = Svc.CollectionConfiguration.Load<ImportCollectionCfg>() ?? new ImportCollectionCfg();
 
-      Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
-
       _importService = new ImportPluginService();
+
+      CreateBrowserRegistryKeys();
+
+      PublishService<IImportPluginService, ImportPluginService>(_importService, ImportConst.ChannelName);
+    }
+
+    /// <inheritdoc />
+    protected override void OnSMStarted()
+    {
+      base.OnSMStarted();
+
+      Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 
       Svc.HotKeyManager
          .RegisterGlobal(
@@ -120,18 +134,13 @@ namespace SuperMemoAssistant.Plugins.Import
            "Import content from a list of url",
            HotKeyScopes.Global,
            new HotKey(Key.B, KeyModifiers.CtrlAltShift),
-           () => ImportFromTheWeb(ImportType.Url));
-      Svc.HotKeyManager
+           () => ImportFromTheWeb(ImportType.Url))
          .RegisterGlobal(
            "ImportBrowser",
            "Import tabs from open browsers",
            HotKeyScopes.Global,
            new HotKey(Key.A, KeyModifiers.CtrlAltShift),
            () => ImportFromTheWeb(ImportType.BrowserTabs));
-
-      CreateBrowserRegistryKeys();
-
-      PublishService<IImportPluginService, ImportPluginService>(_importService, ImportConst.ChannelName);
     }
 
     /// <inheritdoc />
@@ -144,7 +153,8 @@ namespace SuperMemoAssistant.Plugins.Import
 
       cfgWdw.SaveMethod = SaveConfig;
     }
-
+    
+    /// <inheritdoc />
     protected override Application CreateApplication()
     {
       return new ImportApp();

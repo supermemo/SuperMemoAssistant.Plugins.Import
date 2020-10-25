@@ -38,7 +38,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="PluginManager.Interop">
-      <Version>0.2.1.46</Version>
+      <Version>0.2.1.51</Version>
     </PackageReference>
     <PackageReference Include="Sentry.Serilog">
       <Version>2.1.1</Version>
@@ -47,7 +47,7 @@
       <Version>2.0.5-alpha.9</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Services.Sentry">
-      <Version>2.0.5-alpha.2</Version>
+      <Version>2.0.5-alpha.3</Version>
     </PackageReference>
   </ItemGroup>
   <Target Name="NuPack" AfterTargets="Build" Condition=" $(RunNuPack) == 'True' ">
