@@ -119,14 +119,14 @@ namespace SuperMemoAssistant.Plugins.Import
       CreateBrowserRegistryKeys();
 
       PublishService<IImportPluginService, ImportPluginService>(_importService, ImportConst.ChannelName);
+
+      Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
     }
 
     /// <inheritdoc />
     protected override void OnSMStarted()
     {
       base.OnSMStarted();
-
-      Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
 
       Svc.HotKeyManager
          .RegisterGlobal(
