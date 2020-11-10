@@ -19,37 +19,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// 
-// 
-// Created On:   2020/01/13 16:50
-// Modified On:  2020/01/24 16:59
-// Modified By:  Alexis
 
 #endregion
 
 
 
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Anotar.Serilog;
-using CodeHollow.FeedReader;
-using Flurl.Http;
-using Forge.Forms;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Interop.SuperMemo.Content.Contents;
-using SuperMemoAssistant.Interop.SuperMemo.Elements.Builders;
-using SuperMemoAssistant.Interop.SuperMemo.Elements.Models;
-using SuperMemoAssistant.Plugins.Import.Configs;
-using SuperMemoAssistant.Plugins.Import.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.Feeds;
-using SuperMemoAssistant.Services;
-
 namespace SuperMemoAssistant.Plugins.Import.Tasks
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Globalization;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using Anotar.Serilog;
+  using CodeHollow.FeedReader;
+  using Configs;
+  using Extensions;
+  using Flurl.Http;
+  using Forge.Forms;
+  using Interop.SuperMemo.Content.Contents;
+  using Interop.SuperMemo.Elements.Builders;
+  using Interop.SuperMemo.Elements.Models;
+  using Models.Feeds;
+  using Services;
+  using SuperMemoAssistant.Extensions;
+
   public class FeedsImporter
   {
     #region Constants & Statics
@@ -82,32 +77,32 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
     #region Methods
 
-    public async Task<List<FeedData>> DownloadFeeds()
+    public async Task<List<FeedData>> DownloadFeedsAsync()
     {
       LogTo.Debug("Downloading feeds");
       var res = await Task.WhenAll(FeedsConfig.Feeds
                                               .Where(fc => fc.Enabled)
-                                              .Select(DownloadFeed));
+                                              .Select(DownloadFeedAsync)).ConfigureAwait(false);
 
       var feedsData = res.Where(fd => fd != null).ToList();
 
-      LogTo.Debug($"Downloaded {feedsData.Sum(fd => fd.NewItems.Count)} items");
+      LogTo.Debug("Downloaded {V} items", feedsData.Sum(fd => fd.NewItems.Count));
 
       return feedsData;
     }
 
-    private async Task<FeedData> DownloadFeed(FeedCfg feedCfg)
+    private async Task<FeedData> DownloadFeedAsync(FeedCfg feedCfg)
     {
       try
       {
         var lastRefresh = DateTime.Now;
-        var feed        = await FeedReader.ReadAsync(feedCfg.InterpolateUrl());
+        var feed        = await FeedReader.ReadAsync(feedCfg.InterpolateUrl()).ConfigureAwait(false);
 
         if (feed?.Items == null || feed.Items.Count <= 0)
           return null;
 
         feedCfg.PendingRefreshDate = lastRefresh;
-        var feedData = await DownloadFeedContents(new FeedData(feedCfg, feed));
+        var feedData = await DownloadFeedContentsAsync(new FeedData(feedCfg, feed)).ConfigureAwait(false);
 
         if (feedData == null)
           return null;
@@ -120,29 +115,29 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
       }
       catch (Exception ex)
       {
-        LogTo.Warning(ex, $"Exception while reading feed {feedCfg.Name}");
+        LogTo.Warning(ex, "Exception while reading feed {Name}", feedCfg.Name);
       }
 
       return null;
     }
 
-    private async Task<FeedData> DownloadFeedContents(FeedData feedData)
+    private async Task<FeedData> DownloadFeedContentsAsync(FeedData feedData)
     {
       var feedCfg = feedData.FeedCfg;
 
       var feedItemTasks = feedData.Feed.Items.Select(
-        feedItem => DownloadFeedContent(feedCfg,
-                                        feedItem)
+        feedItem => DownloadFeedContentAsync(feedCfg,
+                                             feedItem)
       );
-      var feedItems = await Task.WhenAll(feedItemTasks);
+      var feedItems = await Task.WhenAll(feedItemTasks).ConfigureAwait(false);
 
       feedData.NewItems.AddRange(feedItems.Where(fi => fi != null));
 
       return feedData.NewItems.Any() == false ? null : feedData;
     }
 
-    private async Task<FeedItemExt> DownloadFeedContent(FeedCfg  feedCfg,
-                                                        FeedItem feedItem)
+    private async Task<FeedItemExt> DownloadFeedContentAsync(FeedCfg  feedCfg,
+                                                             FeedItem feedItem)
     {
       WebsiteCfg webCfg = null;
 
@@ -161,8 +156,8 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
         {
           if (feedItem.PublishingDate == null)
           {
-            LogTo.Warning(
-              $"Date missing, or unknown format for feed {feedCfg.Name}, item title '{feedItem.Title}', raw date '{feedItem.PublishingDateString}'");
+            LogTo.Warning("Date missing, or unknown format for feed {Name}, item title '{Title}', raw date '{PublishingDateString}'",
+                          feedCfg.Name, feedItem.Title, feedItem.PublishingDateString);
             return null;
           }
 
@@ -195,7 +190,7 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
           try
           {
-            var httpResp = await httpReq.GetStringAsync();
+            var httpResp = await httpReq.GetStringAsync().ConfigureAwait(false);
 
             if (httpResp != null)
             {
@@ -204,14 +199,14 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
             else
             {
               feedItem.Content = null;
-              LogTo.Warning(
-                $"Failed to download content for feed {feedCfg.Name}, item title '{feedItem.Title}', link '{feedItem.Link}'.");
+              LogTo.Warning("Failed to download content for feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
+                            feedItem.Title, feedItem.Link);
             }
           }
           catch (FlurlHttpException ex)
           {
-            LogTo.Warning(
-              ex, $"Failed to download content for feed {feedCfg.Name}, item title '{feedItem.Title}', link '{feedItem.Link}'.");
+            LogTo.Warning(ex, "Failed to download content for feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
+                          feedItem.Title, feedItem.Link);
           }
         }
 
@@ -226,22 +221,22 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
         //
         // Process content if necessary & push back
 
-        feedItem.Content = await webCfg.ProcessContent(feedItem.Content, feedItem.Link);
+        feedItem.Content = await webCfg.ProcessContent(feedItem.Content, feedItem.Link).ConfigureAwait(false);
 
         // Add feed item
         return new FeedItemExt(feedItem, webCfg);
       }
       catch (Exception ex)
       {
-        LogTo.Error(
-          ex, $"Exception while downloading content for feed {feedCfg.Name}, item title '{feedItem.Title}', link '{feedItem.Link}'");
+        LogTo.Error(ex, "Exception while downloading content for feed {Name}, item title '{Title}', link '{Link}'", feedCfg.Name,
+                    feedItem.Title, feedItem.Link);
       }
 
       return null;
     }
 
 #pragma warning disable 1998
-    public async Task ImportFeeds(
+    public static async Task ImportFeedsAsync(
 #pragma warning restore 1998
       ICollection<FeedData> feedsData)
     {
@@ -262,7 +257,7 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
               .WithReference(
                 // ReSharper disable once PossibleInvalidOperationException
                 r => r.WithDate(feedItem.PublishingDate?.ToString(CultureInfo.InvariantCulture) ?? webCfg.ParseDateString(html))
-                      .WithTitle(feedItem.Title ?? webCfg.ParseTitle(html))
+                      .WithTitle(feedItem.Title                                                 ?? webCfg.ParseTitle(html))
                       .WithAuthor(feedItem.Author)
                       .WithComment(StringEx.Join(", ", feedItem.Categories))
                       .WithSource($"Feed: {feedData.FeedCfg.Name} (<a>{feedData.FeedCfg.SourceUrl}</a>)")

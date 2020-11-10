@@ -99,7 +99,7 @@ namespace SuperMemoAssistant.Plugins.Import.UI
       var urls = Tabs.Where(t => t.Selected)
                      .Select(t => t.Tab.Url);
 
-      var (success, results) = await WebImporter.Instance.Import(urls);
+      var (success, results) = await WebImporter.Instance.ImportAsync(urls);
 
       if (success == false)
       {

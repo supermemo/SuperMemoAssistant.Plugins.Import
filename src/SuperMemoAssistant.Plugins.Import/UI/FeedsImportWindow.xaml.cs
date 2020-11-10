@@ -19,30 +19,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// 
-// 
-// Created On:   2019/09/03 18:15
-// Modified On:  2020/01/24 10:53
-// Modified By:  Alexis
 
 #endregion
 
 
 
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models.Feeds;
-using SuperMemoAssistant.Plugins.Import.Tasks;
-using SuperMemoAssistant.Sys.Threading;
-using SuperMemoAssistant.Sys.Windows.Input;
-
 namespace SuperMemoAssistant.Plugins.Import.UI
 {
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
+  using System.Threading.Tasks;
+  using System.Windows;
+  using System.Windows.Input;
+  using Models.Feeds;
+  using SuperMemoAssistant.Extensions;
+  using Sys.Threading;
+  using Sys.Windows.Input;
+  using Tasks;
+
   /// <summary>Interaction logic for FeedsImportWindow.xaml</summary>
   public partial class FeedsImportWindow : Window
   {
@@ -70,7 +65,7 @@ namespace SuperMemoAssistant.Plugins.Import.UI
 
     public ObservableCollection<FeedData> FeedsData      { get; }
     public bool                           ProtectionLock { get; private set; }
-    public ICommand                       ImportCommand  => new AsyncRelayCommand(ImportFeeds, () => !ProtectionLock);
+    public ICommand                       ImportCommand  => new AsyncRelayCommand(ImportFeedsAsync, () => !ProtectionLock);
     public ICommand                       CancelCommand  => new RelayCommand(Close, () => !ProtectionLock);
 
     #endregion
@@ -96,11 +91,10 @@ namespace SuperMemoAssistant.Plugins.Import.UI
       }
     }
 
-    private Task ImportFeeds()
+    private Task ImportFeedsAsync()
     {
-      return FeedsImporter.Instance
-                        .ImportFeeds(FeedsData)
-                        .ContinueWith(t => Dispatcher.Invoke(Close));
+      return FeedsImporter.ImportFeedsAsync(FeedsData)
+                          .ContinueWith(_ => Dispatcher.Invoke(Close));
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) { }

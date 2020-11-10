@@ -113,9 +113,9 @@ namespace SuperMemoAssistant.Plugins.Import
       // Sentry
 
       var hostType = typeof(Program);
-      var releaseName = $"Import.BrowserNativeHost@{hostType.GetAssemblyVersion()}";
+      var releaseName = hostType.GetAssemblyVersion();
 
-      _sentry = SentryEx.Initialize("https://a63c3dad9552434598dae869d2026696@sentry.io/1362046", releaseName);
+      _sentry = SentryEx.Initialize("https://cb6b904487c743fda807d4b2b15663df@o218793.ingest.sentry.io/5506802", releaseName);
     }
 
     private static void PrintUsage()

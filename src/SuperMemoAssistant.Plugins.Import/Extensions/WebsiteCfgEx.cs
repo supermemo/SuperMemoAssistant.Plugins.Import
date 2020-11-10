@@ -6,7 +6,7 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
@@ -19,32 +19,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// 
-// 
-// Created On:   2019/04/25 16:02
-// Modified On:  2019/04/25 17:52
-// Modified By:  Alexis
 
 #endregion
 
 
 
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Anotar.Serilog;
-using Flurl.Http;
-using HtmlAgilityPack;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Interop.SuperMemo.Elements.Builders;
-using SuperMemoAssistant.Interop.SuperMemo.Elements.Types;
-using SuperMemoAssistant.Plugins.Import.Configs;
-using SuperMemoAssistant.Services.HTML;
-using SuperMemoAssistant.Services.HTML.Extensions;
-
 namespace SuperMemoAssistant.Plugins.Import.Extensions
 {
+  using System;
+  using System.Diagnostics.CodeAnalysis;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using Anotar.Serilog;
+  using Configs;
+  using Flurl.Http;
+  using HtmlAgilityPack;
+  using Interop.SuperMemo.Elements.Builders;
+  using Interop.SuperMemo.Elements.Types;
+  using Services;
+  using Services.HTML;
+  using Services.HTML.Extensions;
+  using SuperMemoAssistant.Extensions;
+
   public static class WebsiteCfgEx
   {
     #region Methods
@@ -56,7 +53,7 @@ namespace SuperMemoAssistant.Plugins.Import.Extensions
       int                 fallbackPriority = ImportConst.DefaultPriority)
     {
       return builder.WithParent(cfg?.RootElement ?? fallbackRoot)
-                    .WithPriority(cfg?.Priority ?? fallbackPriority);
+                    .WithPriority(cfg?.Priority  ?? fallbackPriority);
     }
 
     public static References ConfigureWeb(
@@ -67,14 +64,25 @@ namespace SuperMemoAssistant.Plugins.Import.Extensions
       string          fallbackTitle = null)
     {
       return r.WithDate(cfg?.ParseDateString(html) ?? fallbackDate)
-              .WithTitle(cfg?.ParseTitle(html) ?? fallbackTitle)
+              .WithTitle(cfg?.ParseTitle(html)     ?? fallbackTitle)
               .WithSource(cfg?.Name);
     }
 
+    [SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "Method is not available")]
     public static async Task<string> ProcessContent(this WebsiteCfg cfg, string html, string url)
     {
       if (cfg == null)
-        return html;
+      {
+        if (Svc<ImportPlugin>.Plugin.ImportConfig.UseDefaultHtmlFilter == false)
+          return html;
+
+        var article = SmartReader.Reader.ParseArticle(url, html, null);
+
+        if (article.IsReadable == false)
+          return html;
+
+        return $"<h2>{article.Title}</h2><br/>\n" + article.Content;
+      }
 
       html = cfg.ApplyFilter(html);
 
@@ -85,7 +93,7 @@ namespace SuperMemoAssistant.Plugins.Import.Extensions
       htmlDoc.EnsureAbsoluteLinks(baseUrl);
 
       if (cfg.LoadIframes)
-        await htmlDoc.InlineIFrames(baseUrl, iframeUrl => iframeUrl.SafeGetStringAsync());
+        await htmlDoc.InlineIFrames(baseUrl, iframeUrl => iframeUrl.SafeGetStringAsync()).ConfigureAwait(false);
 
       return htmlDoc.ToHtml();
     }

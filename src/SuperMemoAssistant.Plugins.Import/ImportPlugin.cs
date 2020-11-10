@@ -49,7 +49,6 @@ using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Services.UI.Configuration;
 using Extensions.System.IO;
 using SuperMemoAssistant.Sys.IO.Devices;
-using SuperMemoAssistant.Sys.Remoting;
 
 namespace SuperMemoAssistant.Plugins.Import
 {
@@ -72,7 +71,7 @@ namespace SuperMemoAssistant.Plugins.Import
     #region Constructors
 
     public ImportPlugin()
-      : base("https://a63c3dad9552434598dae869d2026696@sentry.io/1362046")
+      : base("https://cb6b904487c743fda807d4b2b15663df@o218793.ingest.sentry.io/5506802")
     {
       ServicePointManager.DefaultConnectionLimit = 5;
     }
@@ -119,14 +118,17 @@ namespace SuperMemoAssistant.Plugins.Import
       CreateBrowserRegistryKeys();
 
       PublishService<IImportPluginService, ImportPluginService>(_importService, ImportConst.ChannelName);
-
-      Svc.SM.UI.ElementWdw.OnAvailable += new ActionProxy(ElementWindow_OnAvailable);
     }
 
     /// <inheritdoc />
-    protected override void OnSMStarted()
+    protected override void OnSMStarted(bool wasSMAlreadyStarted)
     {
-      base.OnSMStarted();
+      DownloadAndImportFeedsAsync().RunAsync();
+
+      base.OnSMStarted(wasSMAlreadyStarted);
+
+      if (wasSMAlreadyStarted)
+        OnCollectionSelected(Svc.SM.Collection);
 
       Svc.HotKeyManager
          .RegisterGlobal(
@@ -167,7 +169,7 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Methods
 
-    private void CreateBrowserRegistryKeys()
+    private static void CreateBrowserRegistryKeys()
     {
       try
       {
@@ -190,16 +192,16 @@ namespace SuperMemoAssistant.Plugins.Import
       }
     }
 
-    private void ImportFromTheWeb(ImportType type)
+    private static void ImportFromTheWeb(ImportType type)
     {
       Application.Current.Dispatcher.Invoke(
         () => new ImportWindow(type).ShowAndActivate()
       );
     }
 
-    public async Task DownloadAndImportFeeds(bool downloadInBackground = true, bool lockProtection = true)
+    public static async Task DownloadAndImportFeedsAsync(bool lockProtection = true)
     {
-      var feedsData = await FeedsImporter.Instance.DownloadFeeds();
+      var feedsData = await FeedsImporter.Instance.DownloadFeedsAsync().ConfigureAwait(false);
 
       if (feedsData.Count == 0 || feedsData.All(fd => fd.NewItems.Count == 0))
       {
@@ -214,11 +216,6 @@ namespace SuperMemoAssistant.Plugins.Import
           new FeedsImportWindow(feedsData, lockProtection).ShowAndActivate();
         }
       );
-    }
-
-    private void ElementWindow_OnAvailable()
-    {
-      DownloadAndImportFeeds().RunAsync();
     }
 
     public void SaveConfig()

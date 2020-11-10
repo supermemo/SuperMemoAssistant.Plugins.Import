@@ -89,7 +89,7 @@ namespace SuperMemoAssistant.Plugins.Import
       if (req?.Tabs == null)
         throw new ArgumentNullException(nameof(req));
 
-      return WebImporter.Instance.Import(req.Tabs.Select(t => t.Url));
+      return WebImporter.Instance.ImportAsync(req.Tabs.Select(t => t.Url));
     }
 
     /// <inheritdoc />

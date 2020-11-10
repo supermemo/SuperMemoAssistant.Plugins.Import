@@ -39,6 +39,8 @@ using SuperMemoAssistant.Sys.Windows.Input;
 
 namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
 {
+  using System.Windows;
+
   public class FeedList : ObservableCollection<FeedCfg>
   {
     #region Constructors
@@ -59,10 +61,10 @@ namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
 
     #region Properties & Fields - Public
 
-    public ICommand NewCommand    => new AsyncRelayCommand(NewFeed);
-    public ICommand DeleteCommand => new RelayCommand<FeedCfg>(DeleteFeed);
-    public ICommand EditCommand   => new AsyncRelayCommand<FeedCfg>(EditFeed);
-    public ICommand RunNowCommand => new AsyncRelayCommand(RunNow);
+    public ICommand NewCommand    => new AsyncRelayCommand(NewFeedAsync);
+    public ICommand DeleteCommand => new AsyncRelayCommand<FeedCfg>(DeleteFeedAsync);
+    public ICommand EditCommand   => new AsyncRelayCommand<FeedCfg>(EditFeedAsync);
+    public ICommand RunNowCommand => new AsyncRelayCommand(RunNowAsync);
 
     #endregion
 
@@ -71,10 +73,10 @@ namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
 
     #region Methods
 
-    private async Task NewFeed()
+    private async Task NewFeedAsync()
     {
       var feed = new FeedCfg();
-      var res  = await feed.ShowWindow();
+      var res  = await feed.ShowWindowAsync();
 
       if (res.Action is "cancel")
         return;
@@ -82,20 +84,24 @@ namespace SuperMemoAssistant.Plugins.Import.Models.Feeds
       Add(feed);
     }
 
-    private void DeleteFeed(FeedCfg feed)
+    private async Task DeleteFeedAsync(FeedCfg feed)
     {
-      if (Show.Window().For(new Confirmation("Are you sure ?")).Result.Model.Confirmed)
+      var res = await Application.Current.Dispatcher.Invoke(
+                                   () => Show.Window().For(new Confirmation("Are you sure ?")))
+                                 .ConfigureAwait(false);
+
+      if (res.Model.Confirmed)
         Remove(feed);
     }
 
-    private Task EditFeed(FeedCfg feed)
+    private Task EditFeedAsync(FeedCfg feed)
     {
-      return feed.ShowWindow();
+      return feed.ShowWindowAsync();
     }
 
-    private Task RunNow()
+    private Task RunNowAsync()
     {
-      return Svc<ImportPlugin>.Plugin.DownloadAndImportFeeds(false, false);
+      return ImportPlugin.DownloadAndImportFeedsAsync(false);
     }
 
     #endregion

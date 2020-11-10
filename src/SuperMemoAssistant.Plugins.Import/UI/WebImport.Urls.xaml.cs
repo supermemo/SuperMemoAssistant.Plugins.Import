@@ -72,7 +72,7 @@ namespace SuperMemoAssistant.Plugins.Import.UI
     {
       var urls = tbUrls.SplitLines();
 
-      var (success, results) = await WebImporter.Instance.Import(urls);
+      var (success, results) = await WebImporter.Instance.ImportAsync(urls);
 
       if (success == false)
       {

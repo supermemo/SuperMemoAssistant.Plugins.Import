@@ -39,6 +39,8 @@ namespace SuperMemoAssistant.Plugins.Import.Configs
     public FeedsCfg    Feeds    { get; set; } = new FeedsCfg();
     public WebsitesCfg Websites { get; set; } = new WebsitesCfg();
 
+    public bool UseDefaultHtmlFilter { get; set; } = true;
+
     #endregion
   }
 }
