@@ -168,9 +168,8 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
         //
         // Check guid
 
-        if (feedCfg.UseGuid)
-          if (feedCfg.EntriesGuid.Contains(feedItem.Id))
-            return null;
+        if (feedCfg.UseGuid && feedCfg.EntriesGuid.Contains(feedItem.Id))
+          return null;
 
         //
         // Check categories
@@ -188,24 +187,16 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
               string.IsNullOrWhiteSpace(webCfg.Cookie) ? null : new FlurlClient() /*.Configure(s => s.CookiesEnabled = false)*/)
             ?? feedItem.Link.CreateRequest();
 
-          try
-          {
-            var httpResp = await httpReq.GetStringAsync().ConfigureAwait(false);
+          var httpResp = await httpReq.GetStringAsync().ConfigureAwait(false);
 
-            if (httpResp != null)
-            {
-              feedItem.Content = httpResp;
-            }
-            else
-            {
-              feedItem.Content = null;
-              LogTo.Warning("Failed to download content for feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
-                            feedItem.Title, feedItem.Link);
-            }
-          }
-          catch (FlurlHttpException ex)
+          if (httpResp != null)
           {
-            LogTo.Warning(ex, "Failed to download content for feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
+            feedItem.Content = httpResp;
+          }
+          else
+          {
+            feedItem.Content = null;
+            LogTo.Warning("Failed to download content for feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
                           feedItem.Title, feedItem.Link);
           }
         }
@@ -225,6 +216,16 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
 
         // Add feed item
         return new FeedItemExt(feedItem, webCfg);
+      }
+      catch (UriFormatException ex)
+      {
+        LogTo.Warning(ex, "Invalid content URI in feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
+                      feedItem.Title, feedItem.Link);
+      }
+      catch (FlurlHttpException ex)
+      {
+        LogTo.Warning(ex, "Failed to download content for feed {Name}, item title '{Title}', link '{Link}'.", feedCfg.Name,
+                      feedItem.Title, feedItem.Link);
       }
       catch (Exception ex)
       {

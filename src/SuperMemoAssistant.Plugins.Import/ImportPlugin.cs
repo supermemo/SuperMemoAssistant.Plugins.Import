@@ -19,46 +19,56 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// 
-// 
-// Modified On:  2020/02/21 16:46
-// Modified By:  Alexis
 
 #endregion
 
 
 
 
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using Anotar.Serilog;
-using Microsoft.Win32;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Configs;
-using SuperMemoAssistant.Plugins.Import.Models;
-using SuperMemoAssistant.Plugins.Import.Tasks;
-using SuperMemoAssistant.Plugins.Import.UI;
-using SuperMemoAssistant.Services;
-using SuperMemoAssistant.Services.IO.Keyboard;
-using SuperMemoAssistant.Services.Sentry;
-using SuperMemoAssistant.Services.UI.Configuration;
-using Extensions.System.IO;
-using SuperMemoAssistant.Sys.IO.Devices;
-
 namespace SuperMemoAssistant.Plugins.Import
 {
+  using System;
+  using System.Collections.Generic;
+  using System.ComponentModel;
+  using System.Linq;
+  using System.Net;
+  using System.Threading.Tasks;
+  using System.Windows;
+  using System.Windows.Input;
+  using Anotar.Serilog;
+  using Configs;
+  using global::Extensions.System.IO;
+  using Interop.SMA.Notifications;
   using Interop.SuperMemo.Core;
+  using Microsoft.Toolkit.Uwp.Notifications;
+  using Microsoft.Win32;
+  using Models;
+  using Models.Feeds;
+  using Services;
+  using Services.IO.Keyboard;
+  using Services.Sentry;
+  using Services.ToastNotifications;
+  using Services.UI.Configuration;
+  using SuperMemoAssistant.Extensions;
+  using Sys.IO.Devices;
+  using Sys.Remoting;
+  using Tasks;
+  using UI;
 
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
 
   public class ImportPlugin : SentrySMAPluginBase<ImportPlugin>
   {
+    #region Constants & Statics
+
+    private static List<FeedData> _feedsData;
+
+    #endregion
+
+
+
+
     #region Properties & Fields - Non-Public
 
     private ImportPluginService _importService;
@@ -123,12 +133,12 @@ namespace SuperMemoAssistant.Plugins.Import
     /// <inheritdoc />
     protected override void OnSMStarted(bool wasSMAlreadyStarted)
     {
-      DownloadAndImportFeedsAsync().RunAsync();
-
-      base.OnSMStarted(wasSMAlreadyStarted);
+      Svc.SMA.NotificationMgr.OnToastActivated += new ActionProxy<ToastActivationData>(OnToastActivated);
 
       if (wasSMAlreadyStarted)
         OnCollectionSelected(Svc.SM.Collection);
+
+      DownloadAndImportFeedsAsync(true).RunAsync();
 
       Svc.HotKeyManager
          .RegisterGlobal(
@@ -143,6 +153,8 @@ namespace SuperMemoAssistant.Plugins.Import
            HotKeyScopes.Global,
            new HotKey(Key.A, KeyModifiers.CtrlAltShift),
            () => ImportFromTheWeb(ImportType.BrowserTabs));
+
+      base.OnSMStarted(wasSMAlreadyStarted);
     }
 
     /// <inheritdoc />
@@ -155,7 +167,7 @@ namespace SuperMemoAssistant.Plugins.Import
 
       cfgWdw.SaveMethod = SaveConfig;
     }
-    
+
     /// <inheritdoc />
     protected override Application CreateApplication()
     {
@@ -199,7 +211,7 @@ namespace SuperMemoAssistant.Plugins.Import
       );
     }
 
-    public static async Task DownloadAndImportFeedsAsync(bool lockProtection = true)
+    public static async Task DownloadAndImportFeedsAsync(bool inBackground)
     {
       var feedsData = await FeedsImporter.Instance.DownloadFeedsAsync().ConfigureAwait(false);
 
@@ -209,13 +221,38 @@ namespace SuperMemoAssistant.Plugins.Import
         return;
       }
 
+      if (inBackground)
+      {
+        _feedsData = feedsData;
+
+        $"You have {feedsData.Sum(fd => fd.NewItems.Count)} Feed Articles waiting to be imported."
+          .ShowDesktopNotification(
+            ToastButtonEx.Create("View List", ToastActivationType.Background, ("action", "importFeeds_view")),
+            new ToastButtonSnooze());
+
+        return;
+      }
+
       Application.Current.Dispatcher.Invoke(
-        () =>
-        {
-          LogTo.Debug("Creating FeedsImportWindow");
-          new FeedsImportWindow(feedsData, lockProtection).ShowAndActivate();
-        }
+        () => new FeedsImportWindow(feedsData, false).ShowAndActivate()
       );
+    }
+
+    private void OnToastActivated(ToastActivationData activationData)
+    {
+      if (activationData.WasTriggeredByThisPlugin() == false)
+        return;
+
+      var action = activationData.Arguments.SafeGet("action");
+
+      switch (action)
+      {
+        case "importFeeds_view":
+          Application.Current.Dispatcher.Invoke(
+            () => new FeedsImportWindow(_feedsData, true).ShowAndActivate()
+          );
+          break;
+      }
     }
 
     public void SaveConfig()
