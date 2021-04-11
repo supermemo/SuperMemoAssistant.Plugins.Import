@@ -19,30 +19,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// 
-// 
-// Created On:   2020/01/24 11:16
-// Modified On:  2020/01/24 18:01
-// Modified By:  Alexis
 
 #endregion
 
 
 
 
-using System;
-using System.Linq;
-using Anotar.Serilog;
-using PluginManager.Interop.Sys;
-using SuperMemoAssistant.Extensions;
-using SuperMemoAssistant.Plugins.Import.Models;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Requests;
-using SuperMemoAssistant.Plugins.Import.Models.NativeMessaging.Responses.Plugin;
-using SuperMemoAssistant.Plugins.Import.Tasks;
-using SuperMemoAssistant.Sys.Remoting;
-
 namespace SuperMemoAssistant.Plugins.Import
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using Anotar.Serilog;
+  using Interop.SuperMemo.Elements.Models;
+  using Models;
+  using Models.NativeMessaging;
+  using Models.NativeMessaging.Requests;
+  using Models.NativeMessaging.Responses.Plugin;
+  using PluginManager.Interop.Sys;
+  using SuperMemoAssistant.Extensions;
+  using Sys.Remoting;
+  using Tasks;
+
   public class ImportPluginService : PerpetualMarshalByRefObject, IImportPluginService
   {
     #region Methods Impl
@@ -52,7 +51,7 @@ namespace SuperMemoAssistant.Plugins.Import
     [LogToErrorOnException]
     public RespConnect Connect(string extensionId)
     {
-      LogTo.Debug($"Extension {extensionId} connected.");
+      LogTo.Debug("Extension {ExtensionId} connected.", extensionId);
 
       var assemblyVersion = GetType().GetAssemblyVersion();
 
@@ -75,7 +74,7 @@ namespace SuperMemoAssistant.Plugins.Import
     [LogToErrorOnException]
     public void Disconnect(string extensionId)
     {
-      LogTo.Debug($"Extension {extensionId} disconnected.");
+      LogTo.Debug("Extension {ExtensionId} disconnected.", extensionId);
 
       ImportBrowserManager.Instance.OnBrowserDisconnected(extensionId);
     }
@@ -88,6 +87,9 @@ namespace SuperMemoAssistant.Plugins.Import
     {
       if (req?.Tabs == null)
         throw new ArgumentNullException(nameof(req));
+
+      if (!ImportPlugin.ValidateToS())
+        return Task.FromResult(new RespImport(MessageType.ImportTabs, false, new List<ElemCreationResult>()));
 
       return WebImporter.Instance.ImportAsync(req.Tabs.Select(t => t.Url));
     }

@@ -1,0 +1,96 @@
+﻿<Window x:Class="SuperMemoAssistant.Plugins.Import.UI.TermsOfLicense"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SuperMemoAssistant.Plugins.Import.UI"
+        mc:Ignorable="d"
+        Title="Import Plugin: Terms of license"
+        Height="660" Width="840"
+        MinHeight="300" MinWidth="400"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        d:DataContext="{d:DesignInstance local:TermsOfLicense}">
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="2*" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+    </Grid.RowDefinitions>
+
+    <TextBlock Grid.Row="0"
+               FontSize="14"
+               FontWeight="Bold"
+               Text="Terms of license:" />
+
+    <TextBox Grid.Row="1"
+             FontSize="13"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             IsReadOnly="True"
+             IsReadOnlyCaretVisible="True"
+             xml:space="preserve"
+             VerticalScrollBarVisibility="Auto"
+             Margin="0 0 0 20">MIT License
+
+Copyright (c) 2018 SuperMemo Assistant
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</TextBox>
+
+    <TextBlock Grid.Row="2"
+               FontSize="14"
+               FontWeight="Bold"
+               Text="Acknowledgement of existing bug:" />
+
+
+    <TextBox Grid.Row="3"
+             FontSize="13"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             IsReadOnly="True"
+             IsReadOnlyCaretVisible="True"
+             xml:space="preserve"
+             VerticalScrollBarVisibility="Auto"
+             Margin="0 0 0 20">SuperMemo has a rare but dangerous bug which this Plugin can sometime trigger.
+      
+This bug happens when SuperMemo writes to a file that it mistakenly thinks doesn't exist. A popup title "Error!" will appear with a message talking about "Non-empty filespace slot #xxxx".
+
+Your collection can become corrupted as a result. Please make sure to use regular backups. I will not be responsible in case your collection is damaged.
+    </TextBox>
+
+    <CheckBox Grid.Row="4"
+              Content="I have read and agree to the terms of the Import plugin license"
+              FontSize="14"
+              FontWeight="DemiBold"
+              IsChecked="{Binding HasAgreedToTermsOfLicense}"
+              Margin="0 0 0 20" />
+
+    <CheckBox Grid.Row="5"
+              Content="I have read and understand the risks of using the Import plugin. I have set-up regular backups"
+              FontSize="14"
+              FontWeight="DemiBold"
+              IsChecked="{Binding HasAgreedToBugWaiver}" />
+    
+    <Grid Grid.Row="6">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+
+      <Button Grid.Column="1"
+              Margin="10"
+              Padding="30 10"
+              Command="{Binding OkCommand}">
+        <AccessText>_Ok</AccessText>
+      </Button>
+      
+    </Grid>
+  </Grid>
+</Window>

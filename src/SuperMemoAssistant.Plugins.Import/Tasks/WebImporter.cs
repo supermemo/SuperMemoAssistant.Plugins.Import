@@ -44,6 +44,7 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
   using Models.NativeMessaging.Responses.Plugin;
   using Services;
   using Sys.Net;
+  using Sys.Remoting;
 
   public class WebImporter
   {
@@ -91,13 +92,12 @@ namespace SuperMemoAssistant.Plugins.Import.Tasks
             .DoNotDisplay()
         );
 
-      var success = Svc.SM.Registry.Element.Add(
-        out var results,
-        ElemCreationFlags.CreateSubfolders,
+      var results = await Svc.SM.Registry.Element.AddAsync(
+        ElemCreationFlags.CreateSubfolders | ElemCreationFlags.ReuseSubFolders,
         builders.ToArray()
       );
 
-      return new RespImport(MessageType.ImportTabs, success, results);
+      return new RespImport(MessageType.ImportTabs, results.TrueForAll(r => r.Success), results);
     }
 
     private async Task<IEnumerable<(string content, WebsiteCfg cfg, string url)>> DownloadAsync(IEnumerable<string> urls)

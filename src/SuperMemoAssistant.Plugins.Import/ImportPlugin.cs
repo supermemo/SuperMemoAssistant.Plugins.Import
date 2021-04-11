@@ -181,6 +181,24 @@ namespace SuperMemoAssistant.Plugins.Import
 
     #region Methods
 
+    internal static bool ValidateToS()
+    {
+      var plugin = Svc<ImportPlugin>.Plugin;
+
+      if (plugin.ImportConfig.HasAgreedToTOS)
+        return true;
+
+      var consent = TermsOfLicense.AskConsent();
+
+      if (!consent)
+        return false;
+
+      plugin.ImportConfig.HasAgreedToTOS = true;
+      plugin.SaveConfig();
+
+      return true;
+    }
+
     private static void CreateBrowserRegistryKeys()
     {
       try
@@ -206,6 +224,9 @@ namespace SuperMemoAssistant.Plugins.Import
 
     private static void ImportFromTheWeb(ImportType type)
     {
+      if (!ValidateToS())
+        return;
+
       Application.Current.Dispatcher.Invoke(
         () => new ImportWindow(type).ShowAndActivate()
       );
@@ -213,6 +234,9 @@ namespace SuperMemoAssistant.Plugins.Import
 
     public static async Task DownloadAndImportFeedsAsync(bool inBackground)
     {
+      if (!ValidateToS())
+        return;
+
       var feedsData = await FeedsImporter.Instance.DownloadFeedsAsync().ConfigureAwait(false);
 
       if (feedsData.Count == 0 || feedsData.All(fd => fd.NewItems.Count == 0))
@@ -241,6 +265,9 @@ namespace SuperMemoAssistant.Plugins.Import
     private void OnToastActivated(ToastActivationData activationData)
     {
       if (activationData.WasTriggeredByThisPlugin() == false)
+        return;
+
+      if (!ValidateToS())
         return;
 
       var action = activationData.Arguments.SafeGet("action");

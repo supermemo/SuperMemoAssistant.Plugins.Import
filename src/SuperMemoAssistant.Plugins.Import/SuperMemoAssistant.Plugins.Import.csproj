@@ -80,10 +80,10 @@
     </PackageReference>
     <PackageReference Include="SmartReader" Version="0.7.5" />
     <PackageReference Include="SuperMemoAssistant.Interop">
-      <Version>2.1.0-beta.11</Version>
+      <Version>2.1.0-beta.12</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Plugins.Import.Interop">
-      <Version>2.0.5.9</Version>
+      <Version>2.1.0-beta.3</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Services.HTML">
       <Version>2.1.0-beta.3</Version>
@@ -105,4 +105,9 @@
   <Target Name="CopyOutput" AfterTargets="Build">
     <Exec Command="xcopy /h /i /c /k /e /r /y &quot;$(TargetDir)*&quot; &quot;%25UserProfile%25\SuperMemoAssistant\Plugins\Development\$(ProjectName)&quot;" />
   </Target>
+  <ItemGroup>
+    <Page Update="UI\TermsOfLicense.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
 </Project>

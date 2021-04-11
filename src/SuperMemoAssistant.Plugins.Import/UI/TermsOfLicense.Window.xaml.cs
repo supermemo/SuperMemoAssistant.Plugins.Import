@@ -25,17 +25,64 @@
 
 
 
-namespace SuperMemoAssistant.Plugins.Import.Configs
+namespace SuperMemoAssistant.Plugins.Import.UI
 {
-  public class ImportCollectionCfg
+  using System.Windows;
+  using System.Windows.Input;
+  using Sys.Windows.Input;
+
+  /// <summary>Interaction logic for TermsOfLicense.xaml</summary>
+  public partial class TermsOfLicense : Window
   {
+    #region Constructors
+
+    protected TermsOfLicense()
+    {
+      OkCommand = new RelayCommand(Ok, OkCanExecute);
+
+      InitializeComponent();
+    }
+
+    #endregion
+
+
+
+
     #region Properties & Fields - Public
 
-    public FeedsCfg    Feeds    { get; set; } = new FeedsCfg();
-    public WebsitesCfg Websites { get; set; } = new WebsitesCfg();
+    public ICommand OkCommand { get; }
 
-    public bool UseDefaultHtmlFilter { get; set; } = true;
-    public bool HasAgreedToTOS       { get; set; } = false;
+    public bool HasAgreedToTermsOfLicense { get; set; }
+    public bool HasAgreedToBugWaiver      { get; set; }
+
+    #endregion
+
+
+
+
+    #region Methods
+
+    private bool OkCanExecute()
+    {
+      return HasAgreedToTermsOfLicense && HasAgreedToBugWaiver;
+    }
+
+    private void Ok()
+    {
+      DialogResult = true;
+    }
+
+    public static bool AskConsent()
+    {
+      return Application.Current.Dispatcher.Invoke(() =>
+      {
+        var setup = new TermsOfLicense();
+
+        setup.ShowDialog();
+
+        return setup.DialogResult ?? false;
+      });
+    }
 
     #endregion
   }
