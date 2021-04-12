@@ -234,9 +234,6 @@ namespace SuperMemoAssistant.Plugins.Import
 
     public static async Task DownloadAndImportFeedsAsync(bool inBackground)
     {
-      if (!ValidateToS())
-        return;
-
       var feedsData = await FeedsImporter.Instance.DownloadFeedsAsync().ConfigureAwait(false);
 
       if (feedsData.Count == 0 || feedsData.All(fd => fd.NewItems.Count == 0))
@@ -244,6 +241,9 @@ namespace SuperMemoAssistant.Plugins.Import
         LogTo.Debug("No new entries downloaded.");
         return;
       }
+
+      if (!ValidateToS())
+        return;
 
       if (inBackground)
       {
