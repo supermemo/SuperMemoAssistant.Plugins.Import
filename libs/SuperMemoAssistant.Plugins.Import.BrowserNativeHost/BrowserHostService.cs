@@ -122,7 +122,7 @@ namespace SuperMemoAssistant.Plugins.Import
       }
       catch (Exception ex)
       {
-        LogTo.Error(ex, "An exception occured in the Run() loop");
+        LogTo.Error(ex, "An exception occurred in the Run() loop");
       }
     }
 
