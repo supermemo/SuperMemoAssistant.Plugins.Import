@@ -82,7 +82,7 @@
     </PackageReference>
     <PackageReference Include="SmartReader" Version="0.7.5" />
     <PackageReference Include="SuperMemoAssistant.Interop">
-      <Version>2.1.0-beta.12</Version>
+      <Version>2.1.0-beta.18</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Plugins.Import.BrowserNativeHost">
       <GeneratePathProperty>true</GeneratePathProperty>
@@ -95,14 +95,14 @@
       <Version>2.1.0-beta.3</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Services.HTML">
-      <Version>2.1.0-beta.3</Version>
+      <Version>2.1.0-beta.5</Version>
     </PackageReference>
     <PackageReference Include="SuperMemoAssistant.Services.Sentry">
-      <Version>2.1.0-beta.4</Version>
+      <Version>2.1.0-beta.6</Version>
     </PackageReference>
-    <PackageReference Include="SuperMemoAssistant.Services.ToastNotifications" Version="2.1.0-beta.7" />
+    <PackageReference Include="SuperMemoAssistant.Services.ToastNotifications" Version="2.1.0-beta.9" />
     <PackageReference Include="SuperMemoAssistant.Services.UI">
-      <Version>2.1.0-beta.10</Version>
+      <Version>2.1.0-beta.12</Version>
     </PackageReference>
     <PackageReference Include="System.Linq.Dynamic">
       <Version>1.0.8</Version>
